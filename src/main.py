@@ -1,8 +1,22 @@
 import time
-import flet as ft
-
+from flet import (
+    AppBar,
+    Page,
+    app,
+    Icons,
+    Colors,
+    ElevatedButton,
+    IconButton,
+    TextField,
+    Column,
+    MainAxisAlignment,
+    CrossAxisAlignment,
+    Text,
+    ThemeMode,
+)
 from config import APP_NAME, APP_VERSION, DEFAULT_LANG, RU
 from constants import CHOOSE_CITY, PNG, SEARCH_LBL
+
 from functions import (
     add_download_gif,
     get_city_weather,
@@ -10,14 +24,15 @@ from functions import (
     set_page_theme_icon,
     set_weather_icon,
 )
+from src.widgets import CustomAppBar
 
 # from functions import find_city
 
 
-def main(page: ft.Page):
+def main(page: Page):
     page.title = f"{APP_NAME} {APP_VERSION}"
 
-    page.theme_mode = ft.ThemeMode.DARK
+    page.theme_mode = ThemeMode.DARK
     page.lang = DEFAULT_LANG
 
     def change_theme(e):
@@ -61,38 +76,27 @@ def main(page: ft.Page):
         page.update()
 
     page.add(
-        ft.AppBar(
-            title=ft.Text(APP_NAME),
-            bgcolor=ft.Colors.SURFACE,
-            actions=[
-                ft.ElevatedButton(
-                    text=page.lang,
-                    on_click=change_language,
-                    icon=ft.Icons.LANGUAGE,
-                ),
-                ft.IconButton(
-                    icon=ft.Icons.NIGHTLIGHT,
-                    tooltip="Change theme",
-                    on_click=change_theme,
-                    icon_color=ft.Colors.BLUE,
-                ),
-            ],
+        CustomAppBar(
+            title=APP_NAME,
+            lang=RU,
+            change_theme_func=change_theme,
+            change_language_func=change_language,
         )
     )
-    search_input = ft.TextField(
+    search_input = TextField(
         label=CHOOSE_CITY, autofocus=True, width=300, on_submit=submit_text
     )
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.vertical_alignment = MainAxisAlignment.CENTER
+    page.horizontal_alignment = CrossAxisAlignment.CENTER
     page.add(
-        ft.Column(
+        Column(
             [
                 search_input,
             ],
             # alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            horizontal_alignment=CrossAxisAlignment.CENTER,
         )
     )
 
 
-ft.app(target=main, assets_dir="assets")
+app(target=main, assets_dir="assets")
