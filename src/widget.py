@@ -22,16 +22,27 @@ class CustomAppBar(AppBar):
             actions=[
                 ElevatedButton(
                     text=lang,
-                    on_click=change_theme_func,
+                    on_click=change_language_func,
                     icon=Icons.LANGUAGE,
                 ),
                 IconButton(
                     icon=Icons.NIGHTLIGHT,
                     tooltip="Change theme",
-                    on_click=change_language_func,
+                    on_click=change_theme_func,
                     icon_color=Colors.BLUE,
                 ),
             ],
+        )
+
+
+class CustomIconButton(IconButton):
+
+    def __init__(self, key: str, icon: str, tooltip: str, on_click_func):
+        super().__init__(
+            icon=icon,
+            tooltip=tooltip,
+            on_click=on_click_func,
+            icon_color=Colors.BLUE,
         )
 
 

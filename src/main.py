@@ -1,18 +1,22 @@
 import time
 from flet import (
-    AppBar,
-    Page,
     app,
-    Icons,
+    AppBar,
+    border,
     Colors,
-    ElevatedButton,
-    IconButton,
-    TextField,
     Column,
-    MainAxisAlignment,
+    Container,
     CrossAxisAlignment,
+    ElevatedButton,
+    Icons,
+    IconButton,
+    MainAxisAlignment,
+    Page,
     Text,
+    TextField,
     ThemeMode,
+    VerticalDivider,
+    Row,
 )
 from config import APP_NAME, APP_VERSION, DEFAULT_LANG, RU
 from constants import CHOOSE_CITY, PNG, SEARCH_LBL
@@ -24,7 +28,10 @@ from functions import (
     set_page_theme_icon,
     set_weather_icon,
 )
-from src.widgets import CustomAppBar
+from src.gui.app_layout import AppLayout
+from src.gui.sidebar import SideBar
+from src.widget import CustomAppBar
+
 
 # from functions import find_city
 
@@ -75,6 +82,29 @@ def main(page: Page):
         e.control.value = ""
         page.update()
 
+    # page.add(
+    #     CustomAppBar(
+    #         title=APP_NAME,
+    #         lang=RU,
+    #         change_theme_func=change_theme,
+    #         change_language_func=change_language,
+    #     )
+    # )
+    search_input = TextField(
+        label=CHOOSE_CITY, autofocus=True, width=300, on_submit=submit_text
+    )
+    # page.vertical_alignment = MainAxisAlignment.CENTER
+    # page.horizontal_alignment = CrossAxisAlignment.CENTER
+
+    container = Container(
+        content=Text("Привет, Flet!", size=20, color="white"),
+        width=300,
+        height=300,
+        theme=Colors.GREEN,
+        border=border.all(2, "black"),
+        border_radius=10,
+    )
+    # page.add(AppLayout(app=app, page=page))
     page.add(
         CustomAppBar(
             title=APP_NAME,
@@ -83,20 +113,20 @@ def main(page: Page):
             change_language_func=change_language,
         )
     )
-    search_input = TextField(
-        label=CHOOSE_CITY, autofocus=True, width=300, on_submit=submit_text
-    )
-    page.vertical_alignment = MainAxisAlignment.CENTER
-    page.horizontal_alignment = CrossAxisAlignment.CENTER
-    page.add(
-        Column(
-            [
-                search_input,
-            ],
-            # alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=CrossAxisAlignment.CENTER,
-        )
-    )
+    page.add(AppLayout(app=app, page=page))
+    # page.add(Row(
+    #     [
+    #         SideBar(),
+    #         VerticalDivider(width=1),
+    #         Column(
+    #             [Text("Body!")], alignment=MainAxisAlignment.START, expand=True
+    #         ),
+    #     ],
+    #     width=400,
+    #     height=400,
+    #     expand=True,
+    # ))
+    print(page.controls[1].main_view)
 
 
 app(target=main, assets_dir="assets")
