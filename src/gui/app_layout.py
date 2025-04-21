@@ -21,52 +21,33 @@ from flet import (
 )
 
 from src.config import APP_NAME
+from src.gui.page_views import SearchView
 from src.gui.sidebar import SideBar
-from src.widget import CustomAppBar
+from src.widgets import CustomAppBar
 
 
 class AppLayout(Row):
     def __init__(self, app, page: Page, *args, **kwargs):
+
         super().__init__(*args, **kwargs)
         self.app = app
         self.page: Page = page
         self.city = ["Moscow", "Saint Petersburg"]
-        self.sidebar = Row(
+        self.sidebar = Column(
             [
                 SideBar(),
             ],
-            width=100,
-            height=100,
+            expand=True,
         )
-        self.main_view = Column(
-            [
-                Row(
-                    [
-                        Container(
-                            Text(
-                                value="MAIN VIEW",
-                                theme_style=TextThemeStyle.HEADLINE_MEDIUM,
-                            ),
-                            # expand=True,
-                            # padding=padding.only(top=15),
-                        ),
-                    ]
-                ),
-                Row(
-                    [
-                        TextField(
-                            hint_text="Search all boards",
-                            autofocus=False,
-                            content_padding=padding.only(left=10),
-                            width=200,
-                            height=40,
-                            text_size=12,
-                            border_color=Colors.BLACK26,
-                            focused_border_color=Colors.BLUE_ACCENT,
-                            suffix_icon=Icons.SEARCH,
-                        )
-                    ]
-                ),
-            ]
-        )
-        self.controls = [self.sidebar, self.main_view]
+        self._active_view: Control = SearchView()
+        self.controls = [self.sidebar, self.active_view]
+
+    @property
+    def active_view(self):
+        return self._active_view
+
+    @active_view.setter
+    def active_view(self, view):
+        self._active_view = view
+        self.controls[-1] = self._active_view
+        self.page.update()

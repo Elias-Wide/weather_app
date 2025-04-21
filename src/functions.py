@@ -14,7 +14,7 @@ import requests
 
 from constants import DWNLD, GIF_PATH, WEATHER_ICON, WEATHER_ICON_PATH
 from config import API_KEY, API_URL
-from src.widget import CustomAppBar, LoadingGif, WeatherIcon
+from src.widgets import CustomAppBar, LoadingGif, WeatherIcon
 
 
 def set_page_theme_icon(page: Page) -> None:
@@ -31,27 +31,7 @@ def set_page_theme_icon(page: Page) -> None:
         action = get_controls_action(page.controls, CustomAppBar, IconButton)
         action.icon = Icons.NIGHTLIGHT
         action.icon_color = Colors.BLUE
-        # if isinstance(control, CustomAppBar):
-        #     for action in control.actions:
-        #         if isinstance(action, IconButton):
-        #             action.icon = Icons.NIGHTLIGHT
-        # action.icon_color = Colors.BLUE
-        # control.actions[0].icon = Icons.NIGHTLIGHT
-        # control.actions[0].icon_color = Colors.BLUE
-        # page.controls[0].actions[1].icon = Icons.NIGHTLIGHT
-        # page.controls[0].actions[1].icon_color = Colors.BLUE
     page.update()
-
-
-def get_city_weather(city: str, lang: str) -> dict:
-    """
-    Function to find a city based on user input.
-    It is called when the user submits the search input.
-    """
-    response = requests.get(
-        API_URL.format(city_name=city, api_key=API_KEY, lang=lang)
-    ).json()
-    print(response, type(response))
 
 
 def add_download_gif(page: Page) -> None:

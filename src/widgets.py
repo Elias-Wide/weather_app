@@ -6,22 +6,32 @@ from flet import (
     Icons,
     ElevatedButton,
     IconButton,
+    Page,
     Text,
+    TextField,
 )
 
-from src.constants import GIF_PATH, WEATHER_ICON_PATH
+from src.config import DEFAULT_LANG
+from src.constants import CHOOSE_CITY, GIF_PATH, WEATHER_ICON_PATH
+from src.weather_api import get_city_weather
 
 
 class CustomAppBar(AppBar):
     def __init__(
-        self, title: str, lang: str, change_theme_func, change_language_func
+        self,
+        title: str,
+        lang: str,
+        change_theme_func,
+        change_language_func,
+        *args,
+        **kwargs,
     ):
         super().__init__(
             title=Text(title),
             bgcolor=Colors.SURFACE,
             actions=[
                 ElevatedButton(
-                    text=lang,
+                    text=DEFAULT_LANG,
                     on_click=change_language_func,
                     icon=Icons.LANGUAGE,
                 ),
@@ -32,6 +42,8 @@ class CustomAppBar(AppBar):
                     icon_color=Colors.BLUE,
                 ),
             ],
+            *args,
+            **kwargs,
         )
 
 
@@ -65,6 +77,29 @@ class LoadingGif(Image):
             opacity=opacity,
             animate_opacity=animate_opacity,
         )
+
+
+class SearchField(TextField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            label=CHOOSE_CITY,
+            autofocus=True,
+            width=300,
+            adaptive=True,
+            border_color=Colors.BLUE,
+            on_submit=self.search_city,
+        )
+
+    def search_city(self, e):
+        city_name = self.value.strip()
+        print(f"City name: {city_name}")
+        if not city_name:
+            return
+        print(f"{city_name}. Узнаю погоду...")
+        # time.sleep(2)
+        weather = get_city_weather(city_name, self.page.lang)
+        e.control.value = ""
+        self.page.update()
 
 
 class WeatherIcon(Image):

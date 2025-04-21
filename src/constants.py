@@ -5,7 +5,7 @@ SEARCH_LBL: str = "введите город..."
 GIF_PATH: str = "src/assets/gifs/{}.gif"
 WEATHER_ICON: str = "weather_icon"
 WEATHER_ICON_PATH: str = "src/assets/weather_icons/{}.svg"
-
+CITY_IMAGE_PATH: str = "src/assets/city_images/{}.png"
 # FILE EXTENSIONS
 PNG: str = ".png"
 SVG: str = ".svg"
