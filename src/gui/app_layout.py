@@ -18,6 +18,7 @@ from flet import (
     VerticalDivider,
     border,
     CrossAxisAlignment,
+    alignment,
 )
 
 from src.config import APP_NAME
@@ -29,7 +30,7 @@ from src.widgets import CustomAppBar
 class AppLayout(Row):
     def __init__(self, app, page: Page, *args, **kwargs):
 
-        super().__init__(*args, **kwargs)
+        super().__init__(expand=True, *args, **kwargs)
         self.app = app
         self.page: Page = page
         self.city = ["Moscow", "Saint Petersburg"]
@@ -37,7 +38,8 @@ class AppLayout(Row):
             [
                 SideBar(),
             ],
-            expand=True,
+            tight=True,
+            alignment=alignment.center,
         )
         self._active_view: Control = SearchView()
         self.controls = [self.sidebar, self.active_view]

@@ -85,7 +85,8 @@ class SearchField(TextField):
             label=CHOOSE_CITY,
             autofocus=True,
             width=300,
-            adaptive=True,
+            expand=False,
+            # adaptive=True,
             border_color=Colors.BLUE,
             on_submit=self.search_city,
         )

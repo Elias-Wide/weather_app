@@ -38,6 +38,7 @@ from src.widgets import CustomAppBar
 
 def main(page: Page):
     page.title = f"{APP_NAME} {APP_VERSION}"
+    page.adaptive = True
 
     page.theme_mode = ThemeMode.DARK
     page.lang = DEFAULT_LANG
@@ -66,8 +67,6 @@ def main(page: Page):
         )
     )
     page.add(AppLayout(app=app, page=page))
-    # print(len(page.controls))
-    # print(page.controls)
 
 
 app(main)

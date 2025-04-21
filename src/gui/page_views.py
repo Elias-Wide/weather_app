@@ -23,8 +23,18 @@ class SearchView(Column):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.controls = [SearchField()]
+        super().__init__(
+            expand=True, alignment=alignment.bottom_right, *args, **kwargs
+        )
+        self.controls = [
+            Container(
+                SearchField(),
+                alignment=alignment.center,
+                bgcolor=Colors.BLUE_GREY,
+                expand=True,
+                padding=padding.only(left=10, right=10, top=10),
+            )
+        ]
 
 
 class WeatherView(Column):
