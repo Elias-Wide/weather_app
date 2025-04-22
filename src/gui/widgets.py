@@ -1,9 +1,11 @@
+import time
 from flet import (
     alignment,
     Colors,
     Column,
     Container,
     Image,
+    ImageFit,
     padding,
     Row,
     Stack,
@@ -11,8 +13,10 @@ from flet import (
     TextField,
     TextThemeStyle,
     MainAxisAlignment,
+    ImageRepeat,
 )
 
+from src.constants import CITY_IMAGE_PATH
 from src.gui.page_elements import SearchField
 
 
@@ -44,13 +48,54 @@ class WeatherWidget(Column):
     """
 
     def __init__(self, **kwargs):
+        print(CITY_IMAGE_PATH.format("moscow"))
         super().__init__(**kwargs)
         self.controls = [
             Container(
-                TextField(value="Moscow"),
-                alignment=alignment.center,
-                bgcolor=Colors.BLUE_GREY,
+                Row(
+                    controls=[
+                        Stack(
+                            [
+                                Image(
+                                    src=CITY_IMAGE_PATH.format("moscow"),
+                                    # width=700,
+                                    # height=700,
+                                    fit=ImageFit.CONTAIN,
+                                    expand=True,
+                                    expand_loose=True,
+                                    repeat=ImageRepeat.REPEAT,
+                                    # fit="cover",
+                                ),
+                                Text(
+                                    "Image title",
+                                    color="white",
+                                    theme_style=TextThemeStyle.TITLE_LARGE,
+                                    weight="bold",
+                                    opacity=0.5,
+                                    expand=True,
+                                ),
+                            ],
+                        ),
+                        Container(
+                            Column(
+                                [
+                                    Text(
+                                        "Weather in City",
+                                        theme_style=TextThemeStyle.TITLE_LARGE,
+                                        color=Colors.WHITE,
+                                        expand=True,
+                                    ),
+                                ],
+                                expand=True,
+                            ),
+                            expand=True,
+                            bgcolor=Colors.BLUE_GREY,
+                        ),
+                    ],
+                    alignment=alignment.center,
+                    expand=True,
+                ),
                 expand=True,
-                padding=padding.only(left=10, right=10, top=10),
-            )
+                bgcolor=Colors.GREEN,
+            ),
         ]

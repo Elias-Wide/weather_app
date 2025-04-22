@@ -23,7 +23,7 @@ from flet import (
 
 from src.config import APP_NAME
 from src.constants import TOGGLE_BTN
-from src.gui.widgets import SearchWidget
+from src.gui.widgets import SearchWidget, WeatherWidget
 from src.gui.sidebar import SideBar
 from src.gui.page_elements import CustomAppBar, CustomIconButton
 
@@ -44,7 +44,7 @@ class AppLayout(Row):
             on_click=self.toggle_nav_rail,
         )
 
-        self._active_view: Control = SearchWidget()
+        self._active_view: Control = WeatherWidget()
         self.controls = [
             self.sidebar,
             self.toggle_nav_rail_button,

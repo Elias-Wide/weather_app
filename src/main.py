@@ -66,14 +66,6 @@ def main(page: Page):
     page.theme_mode = ThemeMode.DARK
     page.lang = DEFAULT_LANG
     app = WeatherApp(page)
-    # page.add(
-    #     CustomAppBar(
-    #         title=APP_NAME,
-    #         lang=page.lang,
-    #         change_theme_func=change_theme,
-    #         change_language_func=change_language,
-    #     )
-    # )
     page.add(app)
 
 
