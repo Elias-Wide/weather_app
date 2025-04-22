@@ -1,70 +1,17 @@
-from flet import (
-    alignment,
-    Colors,
-    Column,
-    Container,
-    Image,
-    padding,
-    Row,
-    Stack,
-    Text,
-    TextField,
-    TextThemeStyle,
-    MainAxisAlignment,
-)
+from flet import View
 
-from src.widgets import SearchField
+from src.gui.sidebar import SideBar
+from src.gui.widgets import SearchWidget
 
 
-class SearchView(Column):
+class SearchPageView(View):
     """
     This class represents the main view of the application.
     It contains a search bar.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            expand=True, alignment=alignment.bottom_right, *args, **kwargs
-        )
-        self.controls = [
-            Container(
-                SearchField(),
-                alignment=alignment.center,
-                bgcolor=Colors.BLUE_GREY,
-                expand=True,
-                padding=padding.only(left=10, right=10, top=10),
-            )
-        ]
-
-
-class WeatherView(Column):
-    """
-    This class represents the weather view of the application.
-    It contains an image and a weather condition in the City.
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.controls = [
-            Row(
-                [
-                    Stack(
-                        Image(
-                            src="storage/data/new york.png",
-                            width=200,
-                            height=200,
-                            fit="contain",
-                        ),
-                        Text(
-                            value="WEATHER VIEW",
-                            theme_style=TextThemeStyle.HEADLINE_MEDIUM,
-                        ),
-                    ),
-                ]
-            ),
-            Row(
-                [
-                    SearchField(),
-                ]
-            ),
-        ]
+    def __init__(self, app, page, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.app = app
+        self.page = page
+        self.controls = [SideBar(), SearchWidget()]

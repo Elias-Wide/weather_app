@@ -12,7 +12,15 @@ from flet import (
 )
 
 from src.config import DEFAULT_LANG
-from src.constants import CHOOSE_CITY, GIF_PATH, WEATHER_ICON_PATH
+from src.constants import (
+    CHOOSE_CITY,
+    GIF_PATH,
+    LANG_SWITCHER,
+    SEACRH_FIELD,
+    THEME_SWITCHER,
+    WEATHER_ICON,
+    WEATHER_ICON_PATH,
+)
 from src.weather_api import get_city_weather
 
 
@@ -31,11 +39,13 @@ class CustomAppBar(AppBar):
             bgcolor=Colors.SURFACE,
             actions=[
                 ElevatedButton(
+                    key=LANG_SWITCHER,
                     text=DEFAULT_LANG,
                     on_click=change_language_func,
                     icon=Icons.LANGUAGE,
                 ),
                 IconButton(
+                    key=THEME_SWITCHER,
                     icon=Icons.NIGHTLIGHT,
                     tooltip="Change theme",
                     on_click=change_theme_func,
@@ -82,6 +92,7 @@ class LoadingGif(Image):
 class SearchField(TextField):
     def __init__(self, *args, **kwargs):
         super().__init__(
+            key=SEACRH_FIELD,
             label=CHOOSE_CITY,
             autofocus=True,
             width=300,
@@ -112,7 +123,7 @@ class WeatherIcon(Image):
         fit: str = ImageFit.CONTAIN,
     ):
         super().__init__(
-            key="weather_icon",
+            key=WEATHER_ICON,
             src=WEATHER_ICON_PATH.format(name),
             width=width,
             height=height,

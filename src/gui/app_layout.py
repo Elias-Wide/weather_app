@@ -22,15 +22,15 @@ from flet import (
 )
 
 from src.config import APP_NAME
-from src.gui.page_views import SearchView
+from src.gui.widgets import SearchWidget
 from src.gui.sidebar import SideBar
-from src.widgets import CustomAppBar
+from src.gui.page_elements import CustomAppBar
 
 
 class AppLayout(Row):
     def __init__(self, app, page: Page, *args, **kwargs):
 
-        super().__init__(expand=True, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.app = app
         self.page: Page = page
         self.city = ["Moscow", "Saint Petersburg"]
@@ -41,7 +41,7 @@ class AppLayout(Row):
             tight=True,
             alignment=alignment.center,
         )
-        self._active_view: Control = SearchView()
+        self._active_view: Control = SearchWidget()
         self.controls = [self.sidebar, self.active_view]
 
     @property
