@@ -39,7 +39,7 @@ class SideBar(Container):
                 label="О проекте",
             ),
         ]
-
+        self.toggle_nav_rail_button = IconButton(Icons.ARROW_BACK)
         self.top_nav_rail = NavigationRail(
             leading=FloatingActionButton(
                 width=170,
@@ -55,18 +55,17 @@ class SideBar(Container):
             ),
             destinations=self.top_nav_items,
             bgcolor=Colors.BLUE_GREY,
-            height=150,
+            expand=True,
         )
         super().__init__(
             content=Column(
                 [self.top_nav_rail],
-                tight=True,
+                width=250,
+                expand=True,
             ),
-            expand=True,
             padding=padding.all(15),
             margin=margin.all(0),
             width=250,
-            height=400,
             bgcolor=Colors.BLUE_GREY,
         )
         self.on_change = lambda e: print(

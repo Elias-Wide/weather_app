@@ -54,26 +54,3 @@ class WeatherWidget(Column):
                 padding=padding.only(left=10, right=10, top=10),
             )
         ]
-        # self.controls = [
-        #     Row(
-        #         [
-        #             Stack(
-        #                 Image(
-        #                     src="storage/data/new york.png",
-        #                     width=200,
-        #                     height=200,
-        #                     fit="contain",
-        #                 ),
-        #                 Text(
-        #                     value="WEATHER VIEW",
-        #                     theme_style=TextThemeStyle.HEADLINE_MEDIUM,
-        #                 ),
-        #             ),
-        #         ]
-        #     ),
-        #     Row(
-        #         [
-        #             SearchField(),
-        #         ]
-        #     ),
-        # ]
