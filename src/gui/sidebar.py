@@ -39,10 +39,13 @@ class SideBar(Container):
                 label="О проекте",
             ),
         ]
-
+        self.toggle_nav_rail_button = IconButton(Icons.ARROW_BACK)
         self.top_nav_rail = NavigationRail(
             leading=FloatingActionButton(
-                width=170, icon=Icons.SEARCH, text="Поиск"
+                width=170,
+                icon=Icons.SEARCH,
+                text="Поиск",
+                on_click=self.change_page_view,
             ),
             group_alignment=-0.9,
             selected_index=None,
@@ -52,20 +55,30 @@ class SideBar(Container):
             ),
             destinations=self.top_nav_items,
             bgcolor=Colors.BLUE_GREY,
-            height=150,
+            expand=True,
         )
         super().__init__(
             content=Column(
                 [self.top_nav_rail],
-                tight=True,
+                width=250,
+                expand=True,
             ),
-            expand=True,
             padding=padding.all(15),
             margin=margin.all(0),
             width=250,
-            height=400,
             bgcolor=Colors.BLUE_GREY,
         )
         self.on_change = lambda e: print(
             "Selected destination:", e.control.selected_index
         )
+
+    def change_page_view(self, view):
+        """
+        Function to change the page view.
+        It is called when the user clicks on a destination.
+        """
+        print(self.page.controls)
+        # self.page.active_view = Column(
+        #     [self.top_nav_rail, view],
+        #     tight=True,
+        # )

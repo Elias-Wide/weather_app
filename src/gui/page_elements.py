@@ -1,4 +1,5 @@
 from flet import (
+    AlertDialog,
     AppBar,
     Image,
     ImageFit,
@@ -12,7 +13,15 @@ from flet import (
 )
 
 from src.config import DEFAULT_LANG
-from src.constants import CHOOSE_CITY, GIF_PATH, WEATHER_ICON_PATH
+from src.constants import (
+    CHOOSE_CITY,
+    GIF_PATH,
+    LANG_SWITCHER,
+    SEACRH_FIELD,
+    THEME_SWITCHER,
+    WEATHER_ICON,
+    WEATHER_ICON_PATH,
+)
 from src.weather_api import get_city_weather
 
 
@@ -31,11 +40,13 @@ class CustomAppBar(AppBar):
             bgcolor=Colors.SURFACE,
             actions=[
                 ElevatedButton(
+                    key=LANG_SWITCHER,
                     text=DEFAULT_LANG,
                     on_click=change_language_func,
                     icon=Icons.LANGUAGE,
                 ),
                 IconButton(
+                    key=THEME_SWITCHER,
                     icon=Icons.NIGHTLIGHT,
                     tooltip="Change theme",
                     on_click=change_theme_func,
@@ -49,13 +60,30 @@ class CustomAppBar(AppBar):
 
 class CustomIconButton(IconButton):
 
-    def __init__(self, key: str, icon: str, tooltip: str, on_click_func):
-        super().__init__(
-            icon=icon,
-            tooltip=tooltip,
-            on_click=on_click_func,
-            icon_color=Colors.BLUE,
-        )
+    def __init__(
+        self,
+        key: str,
+        icon: str,
+        tooltip: str = None,
+        on_click_func=None,
+        icon_color=Colors.BLUE,
+        *args,
+        **kwargs,
+    ):
+        if not on_click:
+            on_click = self.default_on_click
+        super().__init__()
+        self.key = key
+        self.icon = icon
+        self.tooltip = tooltip
+        self.on_click = on_click
+
+    def default_on_click(self, e):
+        """
+        Default on_click function for the CustomIconButton.
+        It can be overridden by the user.
+        """
+        print(f"Button {self.key} clicked!")
 
 
 class LoadingGif(Image):
@@ -82,6 +110,7 @@ class LoadingGif(Image):
 class SearchField(TextField):
     def __init__(self, *args, **kwargs):
         super().__init__(
+            key=SEACRH_FIELD,
             label=CHOOSE_CITY,
             autofocus=True,
             width=300,
@@ -107,14 +136,25 @@ class WeatherIcon(Image):
     def __init__(
         self,
         name: str,
+        fit: str = ImageFit.CONTAIN,
         width: int = 50,
         height: int = 50,
-        fit: str = ImageFit.CONTAIN,
+        # fit: str = ImageFCONTAIN,
     ):
         super().__init__(
-            key="weather_icon",
+            key=WEATHER_ICON,
             src=WEATHER_ICON_PATH.format(name),
             width=width,
             height=height,
             fit=fit,
+        )
+
+
+class DevAlert(AlertDialog):
+    def __init__(self, title: str, on_dismiss: callable, *args, **kwargs):
+        super().__init__(
+            title=Text("Hello, you!"),
+            on_dismiss=lambda e: print("Dialog dismissed!"),
+            *args,
+            **kwargs,
         )
