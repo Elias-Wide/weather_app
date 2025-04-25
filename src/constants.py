@@ -12,8 +12,12 @@ GIF: str = ".gif"
 
 
 # ELEMENTS KEYS
+FAVORITE_VIEW: str = "favorite_view"
 LANG_SWITCHER: str = "lang_switcher"
 SEACRH_FIELD: str = "search_field"
+SEARCH_VIEW: str = "search_view"
+WEATHER_VIEW: str = "weather_view"
+
 TOGGLE_BTN: str = "toggle_btn"
 THEME_SWITCHER: str = "theme_switcher"
 WEATHER_ICON: str = "weather_icon"

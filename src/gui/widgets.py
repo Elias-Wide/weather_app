@@ -1,6 +1,8 @@
 import time
 from flet import (
     alignment,
+    border,
+    Card,
     Colors,
     Column,
     Container,
@@ -14,10 +16,11 @@ from flet import (
     TextThemeStyle,
     MainAxisAlignment,
     ImageRepeat,
+    Icons,
 )
 
 from src.constants import CITY_IMAGE_PATH
-from src.gui.page_elements import SearchField
+from src.gui.page_elements import CityCard, SearchField
 
 
 class SearchWidget(Column):
@@ -47,8 +50,9 @@ class WeatherWidget(Column):
     It contains an image and a weather condition in the City.
     """
 
-    def __init__(self, **kwargs):
-        print(CITY_IMAGE_PATH.format("moscow"))
+    def __init__(self, city: str, **kwargs):
+        print(city)
+        print(CITY_IMAGE_PATH.format("moscow".lower()))
         super().__init__(**kwargs)
         self.controls = [
             Container(
@@ -57,13 +61,14 @@ class WeatherWidget(Column):
                         Stack(
                             [
                                 Image(
-                                    src=CITY_IMAGE_PATH.format("moscow"),
+                                    src=CITY_IMAGE_PATH.format(city.lower()),
                                     # width=700,
                                     # height=700,
                                     fit=ImageFit.CONTAIN,
                                     expand=True,
-                                    expand_loose=True,
-                                    repeat=ImageRepeat.REPEAT,
+                                    # expand_loose=True,
+                                    # repeat=ImageRepeat.REPEAT,
+                                    border_radius=border.all(30),
                                     # fit="cover",
                                 ),
                                 Text(
@@ -75,15 +80,17 @@ class WeatherWidget(Column):
                                     expand=True,
                                 ),
                             ],
+                            expand=True,
                         ),
                         Container(
                             Column(
                                 [
                                     Text(
-                                        "Weather in City",
+                                        city,
                                         theme_style=TextThemeStyle.TITLE_LARGE,
                                         color=Colors.WHITE,
                                         expand=True,
+                                        width=250,
                                     ),
                                 ],
                                 expand=True,
@@ -94,8 +101,39 @@ class WeatherWidget(Column):
                     ],
                     alignment=alignment.center,
                     expand=True,
+                    tight=True,
                 ),
                 expand=True,
                 bgcolor=Colors.GREEN,
+            ),
+        ]
+
+
+class FavoriteWidget(Column):
+    """
+    This class represents the vieww with favorite cities.
+    """
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(
+            expand=True, alignment=alignment.bottom_right, *args, **kwargs
+        )
+        self.controls = [
+            Card(
+                Container(
+                    CityCard(
+                        city_name="Moscow",
+                        weather_icon="dust",
+                        weather_text="+15",
+                    ),
+                    # TextField("City name"),
+                    alignment=alignment.center,
+                    # bgcolor=Colors.BLUE_GREY,
+                    expand=True,
+                    width=250,
+                    height=150,
+                    padding=10,
+                )
             ),
         ]

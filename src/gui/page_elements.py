@@ -1,15 +1,18 @@
 from flet import (
-    AlertDialog,
+    alignment,
     AppBar,
+    Colors,
+    Column,
+    ElevatedButton,
     Image,
     ImageFit,
-    Colors,
     Icons,
-    ElevatedButton,
     IconButton,
     Page,
+    Row,
     Text,
     TextField,
+    TextThemeStyle,
 )
 
 from src.config import DEFAULT_LANG
@@ -115,7 +118,6 @@ class SearchField(TextField):
             autofocus=True,
             width=300,
             expand=False,
-            # adaptive=True,
             border_color=Colors.BLUE,
             on_submit=self.search_city,
         )
@@ -128,6 +130,7 @@ class SearchField(TextField):
         print(f"{city_name}. Узнаю погоду...")
         # time.sleep(2)
         weather = get_city_weather(city_name, self.page.lang)
+        print(weather)
         e.control.value = ""
         self.page.update()
 
@@ -150,11 +153,67 @@ class WeatherIcon(Image):
         )
 
 
-class DevAlert(AlertDialog):
-    def __init__(self, title: str, on_dismiss: callable, *args, **kwargs):
+class CityCard(Column):
+    """
+    A class representing a city card with weather information and city name.
+    """
+
+    def __init__(
+        self, city_name: str, weather_icon: str, weather_text: str, **kwargs
+    ):
+        """
+        Initialize the CityCard.
+
+        Args:
+            city_name (str): The name of the city.
+            weather_icon (str): The name of the weather icon file (without extension).
+            weather_text (str): The weather description text.
+        """
         super().__init__(
-            title=Text("Hello, you!"),
-            on_dismiss=lambda e: print("Dialog dismissed!"),
-            *args,
+            width=150,
+            height=120,
+            expand=True,
+            alignment=alignment.center,
             **kwargs,
         )
+
+        self.controls = [
+            Row(
+                controls=[
+                    Column(
+                        [
+                            Image(
+                                src=f"src/assets/weather_icons/{weather_icon}.svg",
+                                expand=True,
+                                fit=ImageFit.FIT_WIDTH,
+                            ),
+                        ],
+                        expand=True,
+                        width=100,
+                        height=50,
+                    ),
+                    Column(
+                        [
+                            Text(
+                                weather_text + "°",
+                                color=Colors.GREY,
+                                weight="bold",
+                                style=TextThemeStyle.BODY_LARGE,
+                                size=25,
+                            ),
+                        ],
+                        alignment=alignment.bottom_right,
+                        height=50,
+                    ),
+                ],
+                alignment=alignment.center,
+                expand=True,
+            ),
+            Row(
+                [
+                    Text(city_name, color=Colors.BLUE, weight="bold"),
+                ],
+                alignment=alignment.bottom_left,
+                expand=True,
+            ),
+        ]

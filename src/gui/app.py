@@ -47,6 +47,9 @@ class WeatherApp(AppLayout):
             vertical_alignment=CrossAxisAlignment.START,
         )
 
+        def change_view(e):
+            pass
+
         # def initialize(self):
         #     self.page.views.append(
         #         View(
