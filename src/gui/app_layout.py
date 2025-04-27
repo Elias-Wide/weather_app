@@ -24,7 +24,7 @@ from flet import (
 from src.config import APP_NAME
 from src.constants import FAVORITE_VIEW, SEARCH_VIEW, TOGGLE_BTN, WEATHER_VIEW
 from src.geo_ip import get_location
-from src.gui.widgets import FavoriteWidget, SearchWidget, WeatherWidget
+from src.gui.page_views import FavoriteWidget, SearchWidget, WeatherWidget
 from src.gui.sidebar import SideBar
 from src.gui.page_elements import CustomAppBar, CustomIconButton
 
@@ -39,7 +39,6 @@ class AppLayout(Row):
         self.toggle_nav_rail_button = IconButton(
             key=TOGGLE_BTN,
             icon=Icons.ARROW_CIRCLE_LEFT,
-            icon_color=Colors.BLUE_GREY_400,
             selected=False,
             selected_icon=Icons.ARROW_CIRCLE_RIGHT,
             on_click=self.toggle_nav_rail,
@@ -71,6 +70,12 @@ class AppLayout(Row):
             self.active_view = WeatherWidget(self.city, *args, **kwargs)
         elif view_type == FAVORITE_VIEW:
             self.active_view = FavoriteWidget(*args, **kwargs)
+
+    def update_view(self):
+        view = self.active_view
+        print(self.controls[-1])
+        self.active_view = view
+        self.page.update()
 
     def toggle_nav_rail(self, e):
         self.sidebar.visible = not self.sidebar.visible

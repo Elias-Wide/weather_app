@@ -29,4 +29,4 @@ def parse_condition() -> list[str]:
     print(req)
 
 
-parse_condition()
+# parse_condition()

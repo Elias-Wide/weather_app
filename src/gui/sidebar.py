@@ -58,7 +58,6 @@ class SideBar(Container):
             label_type=NavigationRailLabelType.ALL,
             on_change=self.change_page_view,
             destinations=self.top_nav_items,
-            bgcolor=Colors.BLUE_GREY,
             expand=True,
         )
         super().__init__(
@@ -70,7 +69,6 @@ class SideBar(Container):
             padding=padding.all(15),
             margin=margin.all(0),
             width=250,
-            bgcolor=Colors.BLUE_GREY,
         )
 
     def change_page_view(self, e):

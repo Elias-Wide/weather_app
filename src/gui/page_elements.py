@@ -1,6 +1,8 @@
+import datetime
 from flet import (
     alignment,
     AppBar,
+    Card,
     Colors,
     Column,
     ElevatedButton,
@@ -11,8 +13,10 @@ from flet import (
     Page,
     Row,
     Text,
+    TextButton,
     TextField,
     TextThemeStyle,
+    Container,
 )
 
 from src.config import DEFAULT_LANG
@@ -153,67 +157,64 @@ class WeatherIcon(Image):
         )
 
 
-class CityCard(Column):
+class CityCard(Card):
     """
     A class representing a city card with weather information and city name.
     """
 
-    def __init__(
-        self, city_name: str, weather_icon: str, weather_text: str, **kwargs
-    ):
-        """
-        Initialize the CityCard.
+    def __init__(self, city_name: str, weather_key: str, temp: str, **kwargs):
+        """ """
+        self.city_name = city_name
 
-        Args:
-            city_name (str): The name of the city.
-            weather_icon (str): The name of the weather icon file (without extension).
-            weather_text (str): The weather description text.
-        """
-        super().__init__(
-            width=150,
-            height=120,
-            expand=True,
-            alignment=alignment.center,
-            **kwargs,
-        )
-
-        self.controls = [
-            Row(
+        content = Container(
+            Column(
                 controls=[
-                    Column(
-                        [
-                            Image(
-                                src=f"src/assets/weather_icons/{weather_icon}.svg",
+                    Row(
+                        controls=[
+                            Container(
+                                Column(
+                                    [
+                                        Image(
+                                            src=f"src/assets/weather_icons/{weather_key}.svg",
+                                            expand=True,
+                                            fit=ImageFit.FIT_HEIGHT,
+                                        ),
+                                    ],
+                                    expand=True,
+                                    width=120,
+                                    height=130,
+                                ),
+                            ),
+                            Column(
+                                [
+                                    Text(temp, color=Colors.GREY),
+                                ],
                                 expand=True,
-                                fit=ImageFit.FIT_WIDTH,
                             ),
                         ],
+                        alignment=alignment.center,
                         expand=True,
-                        width=100,
-                        height=50,
+                        height=140,
                     ),
-                    Column(
+                    Row(
                         [
+                            TextButton(
+                                city_name, on_click=lambda e: print(e.control)
+                            ),
                             Text(
-                                weather_text + "°",
-                                color=Colors.GREY,
+                                str(datetime.datetime.now()).split()[0],
+                                color=Colors.BLUE,
                                 weight="bold",
-                                style=TextThemeStyle.BODY_LARGE,
-                                size=25,
                             ),
                         ],
-                        alignment=alignment.bottom_right,
-                        height=50,
+                        alignment=alignment.bottom_left,
+                        # expand=True,
                     ),
-                ],
-                alignment=alignment.center,
-                expand=True,
+                ]
             ),
-            Row(
-                [
-                    Text(city_name, color=Colors.BLUE, weight="bold"),
-                ],
-                alignment=alignment.bottom_left,
-                expand=True,
-            ),
-        ]
+            width=200,
+            height=140,
+            padding=10,
+            alignment=alignment.center,
+        )
+        super().__init__(content=content, **kwargs)
