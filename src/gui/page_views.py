@@ -16,6 +16,7 @@ from flet import (
     Row,
     Stack,
     Text,
+    TextAlign,
     TextField,
     TextThemeStyle,
     MainAxisAlignment,
@@ -123,8 +124,29 @@ class FavoriteWidget(Column):
         super().__init__(
             expand=True, alignment=alignment.bottom_right, *args, **kwargs
         )
-
-        self.set_city_cards(city_card_data)
+        if city_card_data:
+            self.set_city_cards(city_card_data)
+        else:
+            self.controls.append(
+                Container(
+                    Card(
+                        Row(
+                            [
+                                Text(
+                                    "Избранное",
+                                    text_align=TextAlign.CENTER,
+                                    expand=True,
+                                    color=Colors.GREY,
+                                )
+                            ],
+                            alignment=CrossAxisAlignment.CENTER,
+                            expand=True,
+                        ),
+                        expand=True,
+                    ),
+                    expand=True,
+                ),
+            )
         self.controls.append(
             DragTarget(
                 group="color",
@@ -178,7 +200,6 @@ class FavoriteWidget(Column):
             self.controls.append(
                 Container(
                     Row(expand=True, alignment=CrossAxisAlignment.CENTER),
-                    bgcolor="red",
                     expand=True,
                     padding=30,
                 ),
@@ -208,10 +229,10 @@ city_card_data = [
     {"city_name": "Moscow", "weather_key": "dust", "temp": "20"},
     {"city_name": "New York", "weather_key": "dust", "temp": "25"},
     {"city_name": "London", "weather_key": "dust", "temp": "15"},
-    {"city_name": "Tokyo", "weather_key": "dust", "temp": "18"},
-    {"city_name": "Paris", "weather_key": "dust", "temp": "12"},
-    {"city_name": "Sydney", "weather_key": "dust", "temp": "22"},
-    {"city_name": "Berlin", "weather_key": "dust", "temp": "16"},
-    {"city_name": "Dubai", "weather_key": "dust", "temp": "30"},
-    {"city_name": "Rome", "weather_key": "dust", "temp": "19"},
+    # {"city_name": "Tokyo", "weather_key": "dust", "temp": "18"},
+    # {"city_name": "Paris", "weather_key": "dust", "temp": "12"},
+    # {"city_name": "Sydney", "weather_key": "dust", "temp": "22"},
+    # {"city_name": "Berlin", "weather_key": "dust", "temp": "16"},
+    # {"city_name": "Dubai", "weather_key": "dust", "temp": "30"},
+    # {"city_name": "Rome", "weather_key": "dust", "temp": "19"},
 ]
