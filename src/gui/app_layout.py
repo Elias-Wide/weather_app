@@ -22,8 +22,9 @@ from flet import (
 )
 
 from src.config import APP_NAME
-from src.constants import TOGGLE_BTN
-from src.gui.widgets import SearchWidget, WeatherWidget
+from src.constants import FAVORITE_VIEW, SEARCH_VIEW, TOGGLE_BTN, WEATHER_VIEW
+from src.geo_ip import get_location
+from src.gui.page_views import FavoriteWidget, SearchWidget, WeatherWidget
 from src.gui.sidebar import SideBar
 from src.gui.page_elements import CustomAppBar, CustomIconButton
 
@@ -33,18 +34,18 @@ class AppLayout(Row):
         super().__init__(*args, **kwargs)
         self.app = app
         self.page: Page = page
-        self.city = ["Moscow", "Saint Petersburg"]
-        self.sidebar = SideBar()
+        self.city = "moscow"
+        self.sidebar = SideBar(navigation_function=self.change_view)
         self.toggle_nav_rail_button = IconButton(
             key=TOGGLE_BTN,
             icon=Icons.ARROW_CIRCLE_LEFT,
-            icon_color=Colors.BLUE_GREY_400,
             selected=False,
             selected_icon=Icons.ARROW_CIRCLE_RIGHT,
             on_click=self.toggle_nav_rail,
         )
-
-        self._active_view: Control = WeatherWidget()
+        self.city = "moscow"
+        # self.city = get_location()
+        self._active_view: Control = SearchWidget(self.city)
         self.controls = [
             self.sidebar,
             self.toggle_nav_rail_button,
@@ -61,8 +62,22 @@ class AppLayout(Row):
         self.controls[-1] = self._active_view
         self.page.update()
 
+    def change_view(self, view_type: str, *args, **kwargs):
+        """Change the view of the app layout."""
+        if view_type == SEARCH_VIEW:
+            self.active_view = SearchWidget(*args, **kwargs)
+        elif view_type == WEATHER_VIEW:
+            self.active_view = WeatherWidget(self.city, *args, **kwargs)
+        elif view_type == FAVORITE_VIEW:
+            self.active_view = FavoriteWidget(*args, **kwargs)
+
+    def update_view(self):
+        view = self.active_view
+        print(self.controls[-1])
+        self.active_view = view
+        self.page.update()
+
     def toggle_nav_rail(self, e):
-        print("Toggle nav rail")
         self.sidebar.visible = not self.sidebar.visible
         self.toggle_nav_rail_button.selected = (
             not self.toggle_nav_rail_button.selected

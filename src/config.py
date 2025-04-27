@@ -3,7 +3,8 @@ API_URL: str = (
 )
 APP_NAME: str = "Погод!КА"
 APP_VERSION: str = "0.1.0"
-API_KEY: str = "12ee6ee708d8142eeeb7484bbdbe266c"
+IPINFO_TOKEN: str = "31c05071943498"
+WEATHER_API_TOKEN: str = "12ee6ee708d8142eeeb7484bbdbe266c"
 RU: str = "RU"
 EN: str = "EN"
 DEFAULT_LANG: str = EN

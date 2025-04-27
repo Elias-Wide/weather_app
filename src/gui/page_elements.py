@@ -1,15 +1,22 @@
+import datetime
 from flet import (
-    AlertDialog,
+    alignment,
     AppBar,
+    Card,
+    Colors,
+    Column,
+    ElevatedButton,
     Image,
     ImageFit,
-    Colors,
     Icons,
-    ElevatedButton,
     IconButton,
     Page,
+    Row,
     Text,
+    TextButton,
     TextField,
+    TextThemeStyle,
+    Container,
 )
 
 from src.config import DEFAULT_LANG
@@ -115,7 +122,6 @@ class SearchField(TextField):
             autofocus=True,
             width=300,
             expand=False,
-            # adaptive=True,
             border_color=Colors.BLUE,
             on_submit=self.search_city,
         )
@@ -128,6 +134,7 @@ class SearchField(TextField):
         print(f"{city_name}. Узнаю погоду...")
         # time.sleep(2)
         weather = get_city_weather(city_name, self.page.lang)
+        print(weather)
         e.control.value = ""
         self.page.update()
 
@@ -150,11 +157,64 @@ class WeatherIcon(Image):
         )
 
 
-class DevAlert(AlertDialog):
-    def __init__(self, title: str, on_dismiss: callable, *args, **kwargs):
-        super().__init__(
-            title=Text("Hello, you!"),
-            on_dismiss=lambda e: print("Dialog dismissed!"),
-            *args,
-            **kwargs,
+class CityCard(Card):
+    """
+    A class representing a city card with weather information and city name.
+    """
+
+    def __init__(self, city_name: str, weather_key: str, temp: str, **kwargs):
+        """ """
+        self.city_name = city_name
+
+        content = Container(
+            Column(
+                controls=[
+                    Row(
+                        controls=[
+                            Container(
+                                Column(
+                                    [
+                                        Image(
+                                            src=f"src/assets/weather_icons/{weather_key}.svg",
+                                            expand=True,
+                                            fit=ImageFit.FIT_HEIGHT,
+                                        ),
+                                    ],
+                                    expand=True,
+                                    width=120,
+                                    height=130,
+                                ),
+                            ),
+                            Column(
+                                [
+                                    Text(temp, color=Colors.GREY),
+                                ],
+                                expand=True,
+                            ),
+                        ],
+                        alignment=alignment.center,
+                        expand=True,
+                        height=140,
+                    ),
+                    Row(
+                        [
+                            TextButton(
+                                city_name, on_click=lambda e: print(e.control)
+                            ),
+                            Text(
+                                str(datetime.datetime.now()).split()[0],
+                                color=Colors.BLUE,
+                                weight="bold",
+                            ),
+                        ],
+                        alignment=alignment.bottom_left,
+                        # expand=True,
+                    ),
+                ]
+            ),
+            width=200,
+            height=140,
+            padding=10,
+            alignment=alignment.center,
         )
+        super().__init__(content=content, **kwargs)
