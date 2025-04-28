@@ -4,6 +4,7 @@ DWNLD: str = "download"
 SEARCH_LBL: str = "введите город..."
 GIF_PATH: str = "src/assets/gifs/{}.gif"
 WEATHER_ICON_PATH: str = "src/assets/weather_icons/{}.svg"
+CITY_NAME_ERROR: str = "Не удалось найти данный город"
 CITY_IMAGE_PATH: str = "storage/city_images/{}.png"
 # FILE EXTENSIONS
 PNG: str = ".png"

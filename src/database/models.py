@@ -1,27 +1,30 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import DeclarativeBase, declared_attr
 
 
-# from src.database.db import Base
 class PreBase:
-    """Родительский класс для базового."""
+    """
+    Prebase class.
+    Creating tablename and column ID (primary key).
+    """
 
     @declared_attr
     def __tablename__(cls) -> str:
-        """Возвращает имя для таблицы в нижнем регистре."""
+        """Returning tablename in lowercase."""
         return cls.__name__.lower()
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
 
 
 class Base(DeclarativeBase, PreBase):
     pass
 
 
-class WeatherKeys(Base):
+class WeatherConditions(Base):
 
-    key = Column(Integer, primary_key=True)
-    image_name = Column(String)
+    code = Column(Integer, unique=True)
+    day = Column(String, nullable=False)
+    night = Column(String, nullable=False)
 
 
 class Favorites(Base):
@@ -29,3 +32,5 @@ class Favorites(Base):
 
     name = Column(String, nullable=False)
     api_id = Column(Integer, nullable=False)
+    lat = Column(Float, nullable=False)
+    lon = Column(Float, nullable=False)

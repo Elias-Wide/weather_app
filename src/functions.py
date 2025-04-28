@@ -1,5 +1,5 @@
 from flet import Page
-
+from datetime import datetime
 from constants import DWNLD, WEATHER_ICON
 from src.config import APP_NAME
 from src.gui.page_elements import CustomAppBar, LoadingGif
@@ -17,3 +17,8 @@ def add_download_gif(page: Page) -> None:
             page.remove(control)
     page.add(LoadingGif(DWNLD))
     page.update()
+
+
+def get_city_date(city_dt: str):
+    city_dt = datetime.strptime(city_dt, "%Y-%m-%d %H:%M")
+    return city_dt.strftime("%A, %d %B, %H:%M")
