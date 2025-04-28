@@ -4,20 +4,21 @@ from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker
 
 from src.database.models import Base, Favorites, WeatherKeys
 
-# строка подключения
 sqlite_database = "sqlite:///app_db.db"
 
-# создаем движок SqlAlchemy
 engine = create_engine(sqlite_database, echo=True)
-Session = sessionmaker(engine)
+session_maker = sessionmaker(engine)
 
 
 class PreBase:
-    """Родительский класс для базового."""
+    """
+    Prebase class.
+    Creating tablename and column ID (primary key).
+    """
 
     @declared_attr
     def __tablename__(cls) -> str:
-        """Возвращает имя для таблицы в нижнем регистре."""
+        """Returning tablename in lowercase."""
         return cls.__name__.lower()
 
     id = Column(Integer, primary_key=True)
@@ -25,7 +26,3 @@ class PreBase:
 
 def create_db_and_tables() -> None:
     Base.metadata.create_all(engine)
-
-
-create_db_and_tables()
-print("База данных и таблица созданы")

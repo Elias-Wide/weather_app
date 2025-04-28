@@ -34,7 +34,6 @@ class AppLayout(Row):
         super().__init__(*args, **kwargs)
         self.app = app
         self.page: Page = page
-        self.city = "moscow"
         self.sidebar = SideBar(navigation_function=self.change_view)
         self.toggle_nav_rail_button = IconButton(
             key=TOGGLE_BTN,
