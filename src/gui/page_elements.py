@@ -22,6 +22,7 @@ from flet import (
 from src.config import DEFAULT_LANG
 from src.constants import (
     CHOOSE_CITY,
+    CITY_NAME_ERROR,
     GIF_PATH,
     LANG_SWITCHER,
     SEACRH_FIELD,
@@ -29,7 +30,7 @@ from src.constants import (
     WEATHER_ICON,
     WEATHER_ICON_PATH,
 )
-from src.weather_api import get_city_weather
+from src.parse_api import get_city_weather
 
 
 class CustomAppBar(AppBar):
@@ -134,7 +135,10 @@ class SearchField(TextField):
         print(f"{city_name}. Узнаю погоду...")
         # time.sleep(2)
         weather = get_city_weather(city_name, self.page.lang)
-        print(weather)
+        if not weather:
+            self.border_color = "red"
+            self.label = CITY_NAME_ERROR
+
         e.control.value = ""
         self.page.update()
 
@@ -165,7 +169,7 @@ class CityCard(Card):
     def __init__(self, city_name: str, weather_key: str, temp: str, **kwargs):
         """ """
         self.city_name = city_name
-
+        self.api_id = 1234
         content = Container(
             Column(
                 controls=[
@@ -208,7 +212,6 @@ class CityCard(Card):
                             ),
                         ],
                         alignment=alignment.bottom_left,
-                        # expand=True,
                     ),
                 ]
             ),

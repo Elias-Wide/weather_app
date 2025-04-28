@@ -24,7 +24,7 @@ from flet import (
 from src.config import APP_NAME
 from src.constants import FAVORITE_VIEW, SEARCH_VIEW, TOGGLE_BTN, WEATHER_VIEW
 from src.geo_ip import get_location
-from src.gui.page_views import FavoriteWidget, SearchWidget, WeatherWidget
+from src.gui.page_views import FavoritesView, SearchView, WeatherView
 from src.gui.sidebar import SideBar
 from src.gui.page_elements import CustomAppBar, CustomIconButton
 
@@ -44,7 +44,7 @@ class AppLayout(Row):
         )
         self.city = "moscow"
         # self.city = get_location()
-        self._active_view: Control = SearchWidget(self.city)
+        self._active_view: Control = SearchView(self.city)
         self.controls = [
             self.sidebar,
             self.toggle_nav_rail_button,
@@ -64,11 +64,11 @@ class AppLayout(Row):
     def change_view(self, view_type: str, *args, **kwargs):
         """Change the view of the app layout."""
         if view_type == SEARCH_VIEW:
-            self.active_view = SearchWidget(*args, **kwargs)
+            self.active_view = SearchView(*args, **kwargs)
         elif view_type == WEATHER_VIEW:
-            self.active_view = WeatherWidget(self.city, *args, **kwargs)
+            self.active_view = WeatherView(self.city, *args, **kwargs)
         elif view_type == FAVORITE_VIEW:
-            self.active_view = FavoriteWidget(*args, **kwargs)
+            self.active_view = FavoritesView(*args, **kwargs)
 
     def update_view(self):
         view = self.active_view

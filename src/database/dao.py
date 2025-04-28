@@ -5,7 +5,7 @@ from sqlalchemy import and_, insert, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.database.db import session_maker
-from src.database.models import Base
+from src.database.models import Base, Favorites, WeatherConditions
 
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -22,12 +22,9 @@ class BaseDAO(Generic[ModelType]):
     ) -> ModelType:
         with session_maker() as session:
             try:
-                query = (
-                    insert(cls.model).values(**data).returning(cls.model.id)
-                )
+                query = insert(cls.model).values(**data)
                 object = session.execute(query)
                 session.commit()
-                return object.mappings().first()
             except (SQLAlchemyError, Exception) as error:
                 session.rollback()
                 if isinstance(error, SQLAlchemyError):
@@ -35,7 +32,7 @@ class BaseDAO(Generic[ModelType]):
                 elif isinstance(error, Exception):
                     message = "Unknown Exception"
                 message += ": Не удается добавить данные."
-                print(message)
+                print(message + str(error))
 
     @classmethod
     def delete_object(cls, **kwargs):
@@ -52,3 +49,27 @@ class BaseDAO(Generic[ModelType]):
                 return object_to_delete
             except:
                 return None
+
+    @classmethod
+    def get_multi(cls):
+        with session_maker() as session:
+            db_objs = session.execute(select(cls.model))
+            return db_objs.scalars().all()
+
+
+class FavoritesDAO(BaseDAO):
+    model = Favorites
+
+    @classmethod
+    def get_favorites_city(cls, name: str, api_id: int):
+        with session_maker() as session:
+            db_objs = session.execute(
+                select(cls.model).filter(
+                    cls.model.name == name, cls.model.api_id == api_id
+                )
+            )
+            return db_objs.scalars().first()
+
+
+class WeatherConditionsDAO(BaseDAO):
+    model = WeatherConditions

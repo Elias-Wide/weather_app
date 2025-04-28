@@ -26,10 +26,13 @@ from flet import (
 )
 
 from src.constants import CITY_IMAGE_PATH, FAVORITE_VIEW
+from src.database.dao import FavoritesDAO
+from src.functions import get_city_date
 from src.gui.page_elements import CityCard, SearchField
+from src.parse_api import get_weather_page_data
 
 
-class SearchWidget(Column):
+class SearchView(Column):
     """
     This class represents the main view of the application.
     It contains a search bar.
@@ -50,72 +53,58 @@ class SearchWidget(Column):
         ]
 
 
-class WeatherWidget(Column):
+class WeatherView(Column):
     """
     This class represents the weather view of the application.
     It contains an image and a weather condition in the City.
     """
 
-    def __init__(self, city: str, **kwargs):
-        print(city)
-        print(CITY_IMAGE_PATH.format("moscow".lower()))
-        super().__init__(**kwargs)
-        self.controls = [
+    def __init__(self, city_data: dict[str], **kwargs):
+        city_data = {
+            "city": "moscow",
+            "lat": 55.7522,
+            "lon": 37.6156,
+            "datetime": "2025-04-28 23:01",
+            "temp": 7.1,
+            "condition": 1009,
+            "wind_kph": 13.3,
+            "wind_dir": "WSW",
+            "humidity": 45,
+        }
+
+        controls = [
             Container(
-                Row(
-                    controls=[
-                        Stack(
-                            [
-                                Image(
-                                    src=CITY_IMAGE_PATH.format(city.lower()),
-                                    # width=700,
-                                    # height=700,
-                                    fit=ImageFit.CONTAIN,
-                                    expand=True,
-                                    # expand_loose=True,
-                                    # repeat=ImageRepeat.REPEAT,
-                                    border_radius=border.all(30),
-                                    # fit="cover",
-                                ),
-                                Text(
-                                    "Image title",
-                                    color="white",
-                                    theme_style=TextThemeStyle.TITLE_LARGE,
-                                    weight="bold",
-                                    opacity=0.5,
-                                    expand=True,
-                                ),
-                            ],
-                            expand=True,
-                        ),
-                        Container(
-                            Column(
-                                [
-                                    Text(
-                                        city,
-                                        theme_style=TextThemeStyle.TITLE_LARGE,
-                                        color=Colors.WHITE,
-                                        expand=True,
-                                        width=250,
-                                    ),
-                                ],
-                                expand=True,
-                            ),
-                            expand=True,
-                            bgcolor=Colors.BLUE_GREY,
-                        ),
-                    ],
-                    alignment=alignment.center,
+                Column(
+                    [],
                     expand=True,
-                    tight=True,
+                    # width=500,
+                    alignment=alignment.center,
                 ),
+                # bgcolor=Colors.GREEN,
                 expand=True,
-                bgcolor=Colors.GREEN,
-            ),
+            )
         ]
+        for data in get_weather_page_data(city_data):
+            controls[-1].content.controls.append(
+                Row(
+                    [
+                        Text(
+                            data,
+                            text_align=TextAlign.CENTER,
+                            theme_style=TextThemeStyle.BODY_LARGE,
+                            expand=True,
+                        )
+                    ],
+                    expand=True,
+                    alignment=CrossAxisAlignment.CENTER,
+                ),
+            )
+        super().__init__(
+            controls=[Card(Column(controls), margin=5)], expand=True, **kwargs
+        )
 
 
-class FavoriteWidget(Column):
+class FavoritesView(Column):
     """
     This class represents the vieww with favorite cities.
     """
@@ -137,7 +126,7 @@ class FavoriteWidget(Column):
                                     text_align=TextAlign.CENTER,
                                     expand=True,
                                     color=Colors.GREY,
-                                )
+                                ),
                             ],
                             alignment=CrossAxisAlignment.CENTER,
                             expand=True,
@@ -180,6 +169,8 @@ class FavoriteWidget(Column):
         bucket_icon.update()
         src_id = e.src_id
         obj = self.page.get_control(src_id)
+        print(obj.content.api_id)
+        ###NEED CREATE REQUEST IN DB
         for city in city_card_data:
             if obj.content.city_name in city.values():
                 city_card_data.remove(city)
