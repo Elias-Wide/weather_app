@@ -1,7 +1,7 @@
 from datetime import datetime
 import requests
 
-from src.config import API_URL, WEATHER_API_TOKEN
+from src.config import settings
 from src.database.dao import WeatherConditionsDAO
 
 
@@ -39,7 +39,7 @@ def insert_weather_conditions_data(weather_conditions: list[dict]):
         WeatherConditionsDAO.create(data)
 
 
-def get_city_weather(city: str, lang: str) -> dict:
+def get_city_weather(city: str) -> dict:
     """
     Fetches weather data for a specific city from the Weather API.
 
@@ -52,14 +52,15 @@ def get_city_weather(city: str, lang: str) -> dict:
         condition, wind speed, humidity, and more. Returns None if the API request fails.
     """
     response = requests.get(
-        API_URL.format(
-            api_key=WEATHER_API_TOKEN,
+        settings.api_url.format(
+            api_key=settings.weather_api_token,
             city=city,
         )
     )
     if response.status_code != 200:
         return None
     response = response.json()
+    print(response)
     result_data = {
         "city": city,
         "lat": response["location"]["lat"],
@@ -90,7 +91,7 @@ def get_weather_page_data(data: dict[str]):
     result.append(get_city_date(data["datetime"]))
     result.append(
         data["condition"]
-    )  # CREATE DB REQUEST FOR GETTING CONDITION BY IYS CODE FROM API RESPONSE
+    )  # CREATE DB REQUEST FOR GETTING CONDITION BY ITS CODE FROM API RESPONSE
     result.append(f"{data['temp']}°C")
     result.append(f"Wind: {data["wind_kph"]}")
     result.append(f"Humidity: {data["humidity"]}%")
@@ -124,3 +125,52 @@ def get_city_date(city_dt: str):
     """
     city_dt = datetime.strptime(city_dt, "%Y-%m-%d %H:%M")
     return city_dt.strftime("%A, %d %B, %H:%M")
+
+
+response_dict = {
+    "location": {
+        "name": "Moscow",
+        "region": "Moscow City",
+        "country": "Russia",
+        "lat": 55.7522,
+        "lon": 37.6156,
+        "tz_id": "Europe/Moscow",
+        "localtime_epoch": 1746029643,
+        "localtime": "2025-04-30 19:14",
+    },
+    "current": {
+        "last_updated_epoch": 1746028800,
+        "last_updated": "2025-04-30 19:00",
+        "temp_c": 11.2,
+        "temp_f": 52.2,
+        "is_day": 1,
+        "condition": {
+            "text": "Cloudy",
+            "icon": "//cdn.weatherapi.com/weather/64x64/day/119.png",
+            "code": 1006,
+        },
+        "wind_mph": 6.0,
+        "wind_kph": 9.7,
+        "wind_degree": 6,
+        "wind_dir": "N",
+        "pressure_mb": 1013.0,
+        "pressure_in": 29.91,
+        "precip_mm": 0.0,
+        "precip_in": 0.0,
+        "humidity": 43,
+        "cloud": 25,
+        "feelslike_c": 10.1,
+        "feelslike_f": 50.2,
+        "windchill_c": 2.7,
+        "windchill_f": 36.8,
+        "heatindex_c": 5.0,
+        "heatindex_f": 40.9,
+        "dewpoint_c": -0.7,
+        "dewpoint_f": 30.8,
+        "vis_km": 10.0,
+        "vis_miles": 6.0,
+        "uv": 0.1,
+        "gust_mph": 8.6,
+        "gust_kph": 13.9,
+    },
+}

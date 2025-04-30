@@ -18,9 +18,16 @@ from flet import (
     VerticalDivider,
     Row,
 )
-from constants import DWNLD, LANG_SWITCHER, THEME_SWITCHER, WEATHER_ICON
+from constants import (
+    DWNLD,
+    EN,
+    LANG_SWITCHER,
+    RU,
+    THEME_SWITCHER,
+    WEATHER_ICON,
+)
 
-from src.config import APP_NAME, EN, RU
+from src.config import settings
 from src.gui.app_layout import AppLayout
 from src.gui.sidebar import SideBar
 from src.gui.page_elements import CustomAppBar, LoadingGif, WeatherIcon
@@ -31,7 +38,7 @@ class WeatherApp(AppLayout):
         self.page: Page = page
         self.user: str | None = None
         self.appbar = CustomAppBar(
-            title=APP_NAME,
+            title=settings.app_name,
             lang=page.lang,
             change_theme_func=self.set_page_theme,
             change_language_func=self.set_page_language,

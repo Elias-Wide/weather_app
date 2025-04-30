@@ -19,7 +19,7 @@ from flet import (
     Container,
 )
 
-from src.config import DEFAULT_LANG
+from src.config import settings
 from src.constants import (
     CHOOSE_CITY,
     CITY_NAME_ERROR,
@@ -29,6 +29,7 @@ from src.constants import (
     THEME_SWITCHER,
     WEATHER_ICON,
     WEATHER_ICON_PATH,
+    WEATHER_VIEW,
 )
 from src.parse_api import get_city_weather
 
@@ -49,7 +50,7 @@ class CustomAppBar(AppBar):
             actions=[
                 ElevatedButton(
                     key=LANG_SWITCHER,
-                    text=DEFAULT_LANG,
+                    text=settings.default_lang,
                     on_click=change_language_func,
                     icon=Icons.LANGUAGE,
                 ),
@@ -116,7 +117,7 @@ class LoadingGif(Image):
 
 
 class SearchField(TextField):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, page_view, *args, **kwargs):
         super().__init__(
             key=SEACRH_FIELD,
             label=CHOOSE_CITY,
@@ -126,6 +127,7 @@ class SearchField(TextField):
             border_color=Colors.BLUE,
             on_submit=self.search_city,
         )
+        self.page_view = page_view
 
     def search_city(self, e):
         city_name = self.value.strip()
@@ -134,13 +136,13 @@ class SearchField(TextField):
             return
         print(f"{city_name}. Узнаю погоду...")
         # time.sleep(2)
-        weather = get_city_weather(city_name, self.page.lang)
+        weather = get_city_weather(city_name)
+        print(self.page_view)
         if not weather:
             self.border_color = "red"
             self.label = CITY_NAME_ERROR
-
         e.control.value = ""
-        self.page.update()
+        self.page_view.change_view(WEATHER_VIEW)
 
 
 class WeatherIcon(Image):

@@ -38,13 +38,14 @@ class SearchView(Column):
     It contains a search bar.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, page_view, *args, **kwargs):
         super().__init__(
             expand=True, alignment=alignment.bottom_right, *args, **kwargs
         )
+        self.page_view = page_view
         self.controls = [
             Container(
-                SearchField(),
+                SearchField(page_view=page_view),
                 alignment=alignment.center,
                 bgcolor=Colors.BLUE_GREY,
                 expand=True,
@@ -59,7 +60,8 @@ class WeatherView(Column):
     It contains an image and a weather condition in the City.
     """
 
-    def __init__(self, city_data: dict[str], **kwargs):
+    def __init__(self, city_data: dict[str], page_view, **kwargs):
+        self.page_view = page_view
         city_data = {
             "city": "moscow",
             "lat": 55.7522,
@@ -86,18 +88,20 @@ class WeatherView(Column):
         ]
         for data in get_weather_page_data(city_data):
             controls[-1].content.controls.append(
-                Row(
-                    [
-                        Text(
-                            data,
-                            text_align=TextAlign.CENTER,
-                            theme_style=TextThemeStyle.BODY_LARGE,
-                            expand=True,
-                        )
-                    ],
-                    expand=True,
-                    alignment=CrossAxisAlignment.CENTER,
-                ),
+                Card(
+                    Row(
+                        [
+                            Text(
+                                data,
+                                text_align=TextAlign.CENTER,
+                                theme_style=TextThemeStyle.BODY_LARGE,
+                                expand=True,
+                            )
+                        ],
+                        expand=True,
+                        alignment=CrossAxisAlignment.CENTER,
+                    ),
+                )
             )
         super().__init__(
             controls=[Card(Column(controls), margin=5)], expand=True, **kwargs
@@ -109,10 +113,11 @@ class FavoritesView(Column):
     This class represents the vieww with favorite cities.
     """
 
-    def __init__(self, favorites: int = 6, *args, **kwargs):
+    def __init__(self, favorites, page_view, *args, **kwargs):
         super().__init__(
             expand=True, alignment=alignment.bottom_right, *args, **kwargs
         )
+        self.page_view = page_view
         if city_card_data:
             self.set_city_cards(city_card_data)
         else:
