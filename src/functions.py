@@ -1,7 +1,6 @@
 from flet import Page
 from datetime import datetime
 from constants import DWNLD, WEATHER_ICON
-from src.config import APP_NAME
 from src.gui.page_elements import CustomAppBar, LoadingGif
 
 

@@ -73,3 +73,11 @@ class FavoritesDAO(BaseDAO):
 
 class WeatherConditionsDAO(BaseDAO):
     model = WeatherConditions
+
+    @classmethod
+    def get_condition_by_code(cls, code: int) -> str:
+        with session_maker() as session:
+            db_objs = session.execute(
+                select(cls.model.__table__).filter(cls.model.code == code)
+            )
+            return db_objs.mappings().first()

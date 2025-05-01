@@ -18,9 +18,16 @@ from flet import (
     VerticalDivider,
     Row,
 )
-from constants import DWNLD, LANG_SWITCHER, THEME_SWITCHER, WEATHER_ICON
+from constants import (
+    DWNLD,
+    EN,
+    LANG_SWITCHER,
+    RU,
+    THEME_SWITCHER,
+    WEATHER_ICON,
+)
 
-from src.config import APP_NAME, EN, RU
+from src.config import settings
 from src.gui.app_layout import AppLayout
 from src.gui.sidebar import SideBar
 from src.gui.page_elements import CustomAppBar, LoadingGif, WeatherIcon
@@ -31,7 +38,7 @@ class WeatherApp(AppLayout):
         self.page: Page = page
         self.user: str | None = None
         self.appbar = CustomAppBar(
-            title=APP_NAME,
+            title=settings.app_name,
             lang=page.lang,
             change_theme_func=self.set_page_theme,
             change_language_func=self.set_page_language,
@@ -46,39 +53,6 @@ class WeatherApp(AppLayout):
             expand=True,
             vertical_alignment=CrossAxisAlignment.START,
         )
-
-        # def change_view(e):
-        #     pass
-
-        # def initialize(self):
-        #     self.page.views.append(
-        #         View(
-        #             "/",
-        #             [self.appbar, self],
-        #             padding=padding.all(0),
-        #             bgcolor=Colors.BLUE_GREY_200,
-        #         )
-        #     )
-        #     self.page.update()
-        #     # create an initial board for demonstration if no boards
-        #     if len(self.boards) == 0:
-        #         self.create_new_board("My First Board")
-        #     self.page.go("/")
-
-        # def route_change(self, e):
-        #     troute = TemplateRoute(self.page.route)
-        #     if troute.match("/"):
-        #         self.page.go("/boards")
-        #     elif troute.match("/board/:id"):
-        #         if int(troute.id) > len(self.store.get_boards()):
-        #             self.page.go("/")
-        #             return
-        #         self.set_board_view(int(troute.id))
-        #     elif troute.match("/boards"):
-        #         self.set_all_boards_view()
-        #     elif troute.match("/members"):
-        #         self.set_members_view()
-        #     self.page.update()
 
     def set_page_theme(self, e) -> None:
         """
@@ -104,7 +78,6 @@ class WeatherApp(AppLayout):
         if self.page.lang == RU:
             self.page.lang = EN
             lang_switcher.text = EN
-            # self.page.controls[0].actions[0].text = "EN"
         else:
             self.page.lang = RU
             lang_switcher.text = RU

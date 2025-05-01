@@ -19,21 +19,27 @@ from flet import (
     Container,
 )
 
-from src.config import DEFAULT_LANG
+from src.cityweather import CityWeather
+from src.config import settings
 from src.constants import (
     CHOOSE_CITY,
     CITY_NAME_ERROR,
+    DEFAULT_ICON_SRC,
     GIF_PATH,
     LANG_SWITCHER,
     SEACRH_FIELD,
     THEME_SWITCHER,
     WEATHER_ICON,
-    WEATHER_ICON_PATH,
+    WEATHER_VIEW,
 )
 from src.parse_api import get_city_weather
 
 
 class CustomAppBar(AppBar):
+    """
+    A custom AppBar with language and theme switcher buttons.
+    """
+
     def __init__(
         self,
         title: str,
@@ -43,13 +49,22 @@ class CustomAppBar(AppBar):
         *args,
         **kwargs,
     ):
+        """
+        Initializes the CustomAppBar.
+
+        Args:
+            title (str): The title of the AppBar.
+            lang (str): The current language.
+            change_theme_func (callable): Function to change the theme.
+            change_language_func (callable): Function to change the language.
+        """
         super().__init__(
             title=Text(title),
             bgcolor=Colors.SURFACE,
             actions=[
                 ElevatedButton(
                     key=LANG_SWITCHER,
-                    text=DEFAULT_LANG,
+                    text=settings.default_lang,
                     on_click=change_language_func,
                     icon=Icons.LANGUAGE,
                 ),
@@ -67,6 +82,9 @@ class CustomAppBar(AppBar):
 
 
 class CustomIconButton(IconButton):
+    """
+    A custom IconButton with a default on_click behavior.
+    """
 
     def __init__(
         self,
@@ -78,23 +96,40 @@ class CustomIconButton(IconButton):
         *args,
         **kwargs,
     ):
-        if not on_click:
-            on_click = self.default_on_click
+        """
+        Initializes the CustomIconButton.
+
+        Args:
+            key (str): The key for the button.
+            icon (str): The icon to display.
+            tooltip (str, optional): Tooltip text for the button.
+            on_click_func (callable, optional): Function to execute on click.
+            icon_color (str, optional): Color of the icon.
+        """
+        if not on_click_func:
+            on_click_func = self.default_on_click
         super().__init__()
         self.key = key
         self.icon = icon
         self.tooltip = tooltip
-        self.on_click = on_click
+        self.on_click = on_click_func
 
     def default_on_click(self, e):
         """
         Default on_click function for the CustomIconButton.
         It can be overridden by the user.
+
+        Args:
+            e: The event object.
         """
         print(f"Button {self.key} clicked!")
 
 
 class LoadingGif(Image):
+    """
+    A class representing a loading GIF.
+    """
+
     def __init__(
         self,
         name: str,
@@ -104,6 +139,17 @@ class LoadingGif(Image):
         opacity: float = 1.0,
         animate_opacity: int = 5000,
     ):
+        """
+        Initializes the LoadingGif.
+
+        Args:
+            name (str): The key for the GIF.
+            width (int, optional): Width of the GIF. Defaults to 200.
+            height (int, optional): Height of the GIF. Defaults to 200.
+            fit (str, optional): How the image should fit. Defaults to ImageFit.CONTAIN.
+            opacity (float, optional): Opacity of the GIF. Defaults to 1.0.
+            animate_opacity (int, optional): Animation duration for opacity. Defaults to 5000.
+        """
         super().__init__(
             key=name,
             src=GIF_PATH.format("download"),
@@ -116,7 +162,17 @@ class LoadingGif(Image):
 
 
 class SearchField(TextField):
-    def __init__(self, *args, **kwargs):
+    """
+    A custom search field for entering city names.
+    """
+
+    def __init__(self, page_view, *args, **kwargs):
+        """
+        Initializes the SearchField.
+
+        Args:
+            page_view: The parent page view.
+        """
         super().__init__(
             key=SEACRH_FIELD,
             label=CHOOSE_CITY,
@@ -125,36 +181,77 @@ class SearchField(TextField):
             expand=False,
             border_color=Colors.BLUE,
             on_submit=self.search_city,
+            on_change=self.typing_mode,
+            on_blur=self.stop_typing,
         )
+        self.page_view = page_view
+
+    def typing_mode(self, e):
+        """
+        Changes the border color to yellow while typing.
+
+        Args:
+            e: The event object.
+        """
+        self.border_color = "yellow"
+        self.label = CHOOSE_CITY
+        self.page.update()
+
+    def stop_typing(self, e):
+        """
+        Resets the border color to blue when typing stops.
+
+        Args:
+            e: The event object.
+        """
+        self.border_color = Colors.BLUE
+        self.page.update()
 
     def search_city(self, e):
+        """
+        Searches for the city weather when the user submits the input.
+
+        Args:
+            e: The event object.
+        """
         city_name = self.value.strip()
-        print(f"City name: {city_name}")
         if not city_name:
             return
-        print(f"{city_name}. Узнаю погоду...")
-        # time.sleep(2)
-        weather = get_city_weather(city_name, self.page.lang)
+        weather = get_city_weather(city_name)
         if not weather:
             self.border_color = "red"
             self.label = CITY_NAME_ERROR
-
+            self.page.update()
+            return
+        self.page_view.last_weather_request = CityWeather(weather)
         e.control.value = ""
-        self.page.update()
+        self.page_view.change_view(WEATHER_VIEW)
 
 
 class WeatherIcon(Image):
+    """
+    A class representing a weather icon.
+    """
+
     def __init__(
         self,
         name: str,
         fit: str = ImageFit.CONTAIN,
         width: int = 50,
         height: int = 50,
-        # fit: str = ImageFCONTAIN,
     ):
+        """
+        Initializes the WeatherIcon.
+
+        Args:
+            name (str): The key for the icon.
+            fit (str, optional): How the image should fit. Defaults to ImageFit.CONTAIN.
+            width (int, optional): Width of the icon. Defaults to 50.
+            height (int, optional): Height of the icon. Defaults to 50.
+        """
         super().__init__(
             key=WEATHER_ICON,
-            src=WEATHER_ICON_PATH.format(name),
+            src=DEFAULT_ICON_SRC,
             width=width,
             height=height,
             fit=fit,
@@ -167,7 +264,14 @@ class CityCard(Card):
     """
 
     def __init__(self, city_name: str, weather_key: str, temp: str, **kwargs):
-        """ """
+        """
+        Initializes the CityCard.
+
+        Args:
+            city_name (str): The name of the city.
+            weather_key (str): The weather key for the city.
+            temp (str): The temperature in the city.
+        """
         self.city_name = city_name
         self.api_id = 1234
         content = Container(
@@ -177,13 +281,7 @@ class CityCard(Card):
                         controls=[
                             Container(
                                 Column(
-                                    [
-                                        Image(
-                                            src=f"src/assets/weather_icons/{weather_key}.svg",
-                                            expand=True,
-                                            fit=ImageFit.FIT_HEIGHT,
-                                        ),
-                                    ],
+                                    [WeatherIcon("")],
                                     expand=True,
                                     width=120,
                                     height=130,

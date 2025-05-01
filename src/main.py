@@ -3,7 +3,7 @@ from flet import (
     Page,
     ThemeMode,
 )
-from config import APP_NAME, APP_VERSION, DEFAULT_LANG
+from config import settings
 
 from src.parse_api import (
     get_conditions_from_api,
@@ -14,14 +14,12 @@ from src.gui.app import WeatherApp
 
 
 def main(page: Page):
-    page.title = f"{APP_NAME} {APP_VERSION}"
+    page.title = f"{settings.app_name} {settings.app_name}"
     page.adaptive = True
     page.theme_mode = ThemeMode.DARK
-    page.lang = DEFAULT_LANG
+    page.lang = settings.default_lang
     app = WeatherApp(page)
     page.add(app)
-    # create_db_and_tables()
-    # insert_weather_conditions_data(get_conditions_from_api())
 
 
 app(main)

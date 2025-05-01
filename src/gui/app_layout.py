@@ -21,7 +21,7 @@ from flet import (
     alignment,
 )
 
-from src.config import APP_NAME
+from src.config import settings
 from src.constants import FAVORITE_VIEW, SEARCH_VIEW, TOGGLE_BTN, WEATHER_VIEW
 from src.geo_ip import get_location
 from src.gui.page_views import FavoritesView, SearchView, WeatherView
@@ -32,6 +32,7 @@ from src.gui.page_elements import CustomAppBar, CustomIconButton
 class AppLayout(Row):
     def __init__(self, app, page: Page, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.expand = True
         self.app = app
         self.page: Page = page
         self.sidebar = SideBar(navigation_function=self.change_view)
@@ -42,9 +43,9 @@ class AppLayout(Row):
             selected_icon=Icons.ARROW_CIRCLE_RIGHT,
             on_click=self.toggle_nav_rail,
         )
-        self.city = "moscow"
+        self.last_weather_request = None
         # self.city = get_location()
-        self._active_view: Control = SearchView(self.city)
+        self._active_view: Control = SearchView(page_view=self)
         self.controls = [
             self.sidebar,
             self.toggle_nav_rail_button,
@@ -63,18 +64,14 @@ class AppLayout(Row):
 
     def change_view(self, view_type: str, *args, **kwargs):
         """Change the view of the app layout."""
-        if view_type == SEARCH_VIEW:
-            self.active_view = SearchView(*args, **kwargs)
-        elif view_type == WEATHER_VIEW:
-            self.active_view = WeatherView(self.city, *args, **kwargs)
-        elif view_type == FAVORITE_VIEW:
-            self.active_view = FavoritesView(*args, **kwargs)
 
-    def update_view(self):
-        view = self.active_view
-        print(self.controls[-1])
-        self.active_view = view
-        self.page.update()
+        if view_type == FAVORITE_VIEW:
+            new_view = FavoritesView
+        elif view_type == SEARCH_VIEW or not self.last_weather_request:
+            new_view = SearchView
+        elif view_type == WEATHER_VIEW:
+            new_view = WeatherView
+        self.active_view = new_view(page_view=self, *args, **kwargs)
 
     def toggle_nav_rail(self, e):
         self.sidebar.visible = not self.sidebar.visible
