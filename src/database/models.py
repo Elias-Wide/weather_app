@@ -20,23 +20,13 @@ class Base(DeclarativeBase, PreBase):
     pass
 
 
-class WeatherConditions(Base):
-
-    code = Column(Integer, unique=True)
-    day = Column(String, nullable=False)
-    night = Column(String, nullable=False)
-
-
 class Favorites(Base):
     """Favorites city db model."""
 
     region = Column(String, nullable=False)
-    country = Column(String, nullable=False)
     lat = Column(Float, nullable=False)
     lon = Column(Float, nullable=False)
 
     __table_args__ = (
-        UniqueConstraint(
-            "region", "country", "lat", "lon", name="unique_favorites"
-        ),
+        UniqueConstraint("region", "lat", "lon", name="unique_favorites"),
     )

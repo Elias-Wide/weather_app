@@ -25,6 +25,7 @@ from flet import (
     CrossAxisAlignment,
 )
 
+from parse_api import get_city_weather
 from src.cityweather import CityWeather
 from src.constants import CITY_IMAGE_PATH, FAVORITE_VIEW
 from src.database.dao import FavoritesDAO
@@ -114,10 +115,12 @@ class FavoritesView(Column):
         super().__init__(
             expand=True, alignment=alignment.bottom_right, *args, **kwargs
         )
-        favorites_cities = FavoritesDAO.get_multi()
-        list_cities = []
         self.page_view = page_view
-        if not city_card_data:
+        list_cities = [
+            CityWeather(get_city_weather(city.region))
+            for city in FavoritesDAO.get_multi()
+        ]
+        if not list_cities:
             self.controls.append(
                 Container(
                     Row(
@@ -137,7 +140,7 @@ class FavoritesView(Column):
                 )
             )
         else:
-            self.set_city_cards(city_card_data)
+            self.set_city_cards(list_cities)
             self.controls.append(
                 DragTarget(
                     group="color",
@@ -175,13 +178,8 @@ class FavoritesView(Column):
         bucket_icon.update()
         src_id = e.src_id
         obj = self.page.get_control(src_id)
-        print(obj.content.api_id)
-        ###NEED CREATE REQUEST IN DB
-        for city in city_card_data:
-            if obj.content.city_name in city.values():
-                city_card_data.remove(city)
-                break
-
+        city: CityWeather = obj.content.city
+        FavoritesDAO.delete_object(**city.formated_data_for_favs())
         self.page.controls[0].change_view(FAVORITE_VIEW)
 
     def drag_leave(self, e: DragTargetEvent):
@@ -189,7 +187,7 @@ class FavoritesView(Column):
         bucket_icon.color = None
         bucket_icon.update()
 
-    def set_city_cards(self, city_card_info: dict[str]):
+    def set_city_cards(self, city_card_info: list[CityWeather]):
         city_num = 0
         self.controls = []
         while city_num != len(city_card_info):
@@ -209,31 +207,10 @@ class FavoritesView(Column):
                     Container(
                         Draggable(
                             group="color",
-                            content=CityCard(
-                                city_name=city["city_name"],
-                                weather_key=city["weather_key"],
-                                temp=city["temp"],
-                            ),
+                            content=CityCard(city),
                         ),
                         # expand=True,
                     )
                 )
                 fav_counter += 1
                 city_num += 1
-
-
-city_card_data = [
-    {
-        "city_name": "Moscow",
-        "weather_key": "//cdn.weatherapi.com/weather/64x64/night/119.png",
-        "temp": "20",
-    },
-    {"city_name": "New York", "weather_key": "dust", "temp": "25"},
-    {"city_name": "London", "weather_key": "dust", "temp": "15"},
-    # {"city_name": "Tokyo", "weather_key": "dust", "temp": "18"},
-    # {"city_name": "Paris", "weather_key": "dust", "temp": "12"},
-    # {"city_name": "Sydney", "weather_key": "dust", "temp": "22"},
-    # {"city_name": "Berlin", "weather_key": "dust", "temp": "16"},
-    # {"city_name": "Dubai", "weather_key": "dust", "temp": "30"},
-    # {"city_name": "Rome", "weather_key": "dust", "temp": "19"},
-]

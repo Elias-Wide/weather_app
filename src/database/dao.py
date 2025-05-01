@@ -5,7 +5,7 @@ from sqlalchemy import and_, insert, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.database.db import session_maker
-from src.database.models import Base, Favorites, WeatherConditions
+from src.database.models import Base, Favorites
 
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -61,42 +61,17 @@ class FavoritesDAO(BaseDAO):
     model = Favorites
 
     @classmethod
-    def get_favorites_city(cls, name: str, api_id: int):
-        with session_maker() as session:
-            db_objs = session.execute(
-                select(cls.model).filter(
-                    cls.model.name == name, cls.model.api_id == api_id
-                )
-            )
-            return db_objs.scalars().first()
-
-    @classmethod
     def get_fav_city(
         cls,
         region: str,
-        country: str,
         lat: float,
         lon: float,
     ):
         with session_maker() as session:
             db_objs = session.execute(
                 select(cls.model).filter(
-                    cls.model.region == region,
-                    cls.model.country == country,
                     cls.model.lat == lat,
                     cls.model.lon == lon,
                 )
             )
             return db_objs.scalars().first()
-
-
-class WeatherConditionsDAO(BaseDAO):
-    model = WeatherConditions
-
-    @classmethod
-    def get_condition_by_code(cls, code: int) -> str:
-        with session_maker() as session:
-            db_objs = session.execute(
-                select(cls.model.__table__).filter(cls.model.code == code)
-            )
-            return db_objs.mappings().first()

@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     app_version: str
     ip_info_token: str
     default_lang: str
+    db_name: str
 
 
 settings = Settings()

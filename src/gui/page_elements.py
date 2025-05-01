@@ -264,7 +264,7 @@ class CityCard(Card):
     A class representing a city card with weather information and city name.
     """
 
-    def __init__(self, city_name: str, weather_key: str, temp: str, **kwargs):
+    def __init__(self, city: CityWeather, **kwargs):
         """
         Initializes the CityCard.
 
@@ -273,8 +273,7 @@ class CityCard(Card):
             weather_key (str): The weather key for the city.
             temp (str): The temperature in the city.
         """
-        self.city_name = city_name
-        self.api_id = 1234
+        self.city = city
         content = Container(
             Column(
                 controls=[
@@ -282,15 +281,24 @@ class CityCard(Card):
                         controls=[
                             Container(
                                 Column(
-                                    [WeatherIcon("")],
+                                    [WeatherIcon("", width=150)],
                                     expand=True,
-                                    width=120,
-                                    height=130,
+                                    width=180,
+                                    height=150,
+                                    alignment=alignment.center,
                                 ),
+                                width=180,
+                                expand=True,
+                                bgcolor="green",
                             ),
                             Column(
                                 [
-                                    Text(temp, color=Colors.GREY),
+                                    Text(
+                                        city.formatted_temp_c(),
+                                        color=Colors.GREY,
+                                        expand=True,
+                                        size=20,
+                                    ),
                                 ],
                                 expand=True,
                             ),
@@ -302,7 +310,7 @@ class CityCard(Card):
                     Row(
                         [
                             TextButton(
-                                city_name, on_click=lambda e: print(e.control)
+                                city.name, on_click=lambda e: print(e.control)
                             ),
                             Text(
                                 str(datetime.datetime.now()).split()[0],
@@ -314,7 +322,7 @@ class CityCard(Card):
                     ),
                 ]
             ),
-            width=200,
+            width=250,
             height=140,
             padding=10,
             alignment=alignment.center,
@@ -328,7 +336,6 @@ class FavoritesButton(IconButton):
         city_in_favs = FavoritesDAO.get_fav_city(
             **city.formated_data_for_favs()
         )
-        print(city_in_favs)
         if city_in_favs:
             icon = Icons.FAVORITE_OUTLINED
             on_click_func = self.delete_from_favs

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from src.constants import DEFAULT_ICON_SRC
-from src.database.dao import WeatherConditionsDAO
+from src.weather_conditions import weather_conditions
 
 
 class CityWeather:
@@ -69,12 +69,9 @@ class CityWeather:
         self._wind_kph = value
 
     def get_condition_text(self):
-        condition = WeatherConditionsDAO.get_condition_by_code(
-            self.condition_code
-        )
-        if not self.is_day:
-            return condition["night"]
-        return condition["day"]
+        if self.condition_code == 1000 and not self.is_day:
+            return {"EN": "Clear", "RU": "Ясно"}["RU"]
+        return weather_conditions[self.condition_code]["RU"]
 
     def formatted_wind_kph(self):
         return f"Wind: {self._wind_kph}kp/h"
@@ -113,7 +110,6 @@ class CityWeather:
     def formated_data_for_favs(self):
         return {
             "region": self.region,
-            "country": self.country,
             "lat": self.lat,
             "lon": self.lon,
         }

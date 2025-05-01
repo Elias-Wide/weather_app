@@ -2,7 +2,6 @@ from datetime import datetime
 import requests
 
 from src.config import settings
-from src.database.dao import WeatherConditionsDAO
 
 
 def get_conditions_from_api() -> list[dict[str]]:
@@ -28,17 +27,6 @@ def get_conditions_from_api() -> list[dict[str]]:
     )
 
 
-def insert_weather_conditions_data(weather_conditions: list[dict]):
-    """
-    Inserts weather condition data into the database.
-
-    Args:
-        weather_conditions (list[dict]): A list of dictionaries containing weather condition data.
-    """
-    for data in weather_conditions:
-        WeatherConditionsDAO.create(data)
-
-
 def get_city_weather(city: str) -> dict:
     """
     Fetches weather data for a specific city from the Weather API.
@@ -59,5 +47,4 @@ def get_city_weather(city: str) -> dict:
     )
     if response.status_code != 200:
         return None
-    print(response.json())
     return response.json()
