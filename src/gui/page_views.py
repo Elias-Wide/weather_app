@@ -25,11 +25,11 @@ from flet import (
     CrossAxisAlignment,
 )
 
+from src.cityweather import CityWeather
 from src.constants import CITY_IMAGE_PATH, FAVORITE_VIEW
 from src.database.dao import FavoritesDAO
 from src.functions import get_city_date
-from src.gui.page_elements import CityCard, SearchField
-from src.parse_api import get_weather_page_data
+from src.gui.page_elements import CityCard, SearchField, WeatherIcon
 
 
 class SearchView(Column):
@@ -60,33 +60,20 @@ class WeatherView(Column):
     It contains an image and a weather condition in the City.
     """
 
-    def __init__(self, city_data: dict[str], page_view, **kwargs):
+    def __init__(self, page_view, *args, **kwargs):
         self.page_view = page_view
-        city_data = {
-            "city": "moscow",
-            "lat": 55.7522,
-            "lon": 37.6156,
-            "datetime": "2025-04-28 23:01",
-            "temp": 7.1,
-            "condition": 1009,
-            "wind_kph": 13.3,
-            "wind_dir": "WSW",
-            "humidity": 45,
-        }
-
+        city: CityWeather = page_view.last_weather_request
         controls = [
             Container(
                 Column(
                     [],
                     expand=True,
-                    # width=500,
                     alignment=alignment.center,
                 ),
-                # bgcolor=Colors.GREEN,
                 expand=True,
             )
         ]
-        for data in get_weather_page_data(city_data):
+        for data in city.get_weather_data():
             controls[-1].content.controls.append(
                 Card(
                     Row(
@@ -103,8 +90,12 @@ class WeatherView(Column):
                     ),
                 )
             )
+        controls[-1].content.controls[0] = WeatherIcon("name")
         super().__init__(
-            controls=[Card(Column(controls), margin=5)], expand=True, **kwargs
+            controls=[Card(Column(controls), margin=5)],
+            expand=True,
+            *args,
+            **kwargs,
         )
 
 
@@ -113,55 +104,57 @@ class FavoritesView(Column):
     This class represents the vieww with favorite cities.
     """
 
-    def __init__(self, favorites, page_view, *args, **kwargs):
+    def __init__(self, page_view, *args, **kwargs):
         super().__init__(
             expand=True, alignment=alignment.bottom_right, *args, **kwargs
         )
         self.page_view = page_view
-        if city_card_data:
-            self.set_city_cards(city_card_data)
-        else:
+        if not city_card_data:
             self.controls.append(
                 Container(
-                    Card(
-                        Row(
-                            [
-                                Text(
-                                    "Избранное",
-                                    text_align=TextAlign.CENTER,
-                                    expand=True,
-                                    color=Colors.GREY,
-                                ),
-                            ],
-                            alignment=CrossAxisAlignment.CENTER,
-                            expand=True,
-                        ),
+                    Row(
+                        [
+                            IconButton(
+                                Icons.ADD_ROUNDED,
+                                expand=True,
+                                icon_size=100,
+                                height=500,
+                            )
+                        ],
+                        height=1000,
+                        alignment=CrossAxisAlignment.CENTER,
                         expand=True,
                     ),
                     expand=True,
+                )
+            )
+        else:
+            self.set_city_cards(city_card_data)
+            self.controls.append(
+                DragTarget(
+                    group="color",
+                    content=Container(
+                        content=Card(
+                            Row(
+                                controls=[
+                                    IconButton(
+                                        icon=Icons.DELETE,
+                                        expand=True,
+                                        height=70,
+                                        icon_size=45,
+                                    )
+                                ],
+                                expand=True,
+                            ),
+                        ),
+                        alignment=alignment.center,
+                        height=70,
+                    ),
+                    on_will_accept=self.drag_will_accept,
+                    on_accept=self.drag_accept,
+                    on_leave=self.drag_leave,
                 ),
             )
-        self.controls.append(
-            DragTarget(
-                group="color",
-                content=Container(
-                    content=Card(
-                        Row(
-                            controls=[
-                                IconButton(
-                                    icon=Icons.DELETE,
-                                    expand=True,
-                                )
-                            ],
-                        ),
-                    ),
-                    alignment=alignment.center,
-                ),
-                on_will_accept=self.drag_will_accept,
-                on_accept=self.drag_accept,
-                on_leave=self.drag_leave,
-            ),
-        )
 
     def drag_will_accept(self, e: DragTargetEvent):
         bucket_icon = self.controls[-1].content.content
@@ -219,10 +212,15 @@ class FavoritesView(Column):
                 )
                 fav_counter += 1
                 city_num += 1
+        print("DON!!!!!!!!!!!!!!!!!!!!!")
 
 
 city_card_data = [
-    {"city_name": "Moscow", "weather_key": "dust", "temp": "20"},
+    {
+        "city_name": "Moscow",
+        "weather_key": "//cdn.weatherapi.com/weather/64x64/night/119.png",
+        "temp": "20",
+    },
     {"city_name": "New York", "weather_key": "dust", "temp": "25"},
     {"city_name": "London", "weather_key": "dust", "temp": "15"},
     # {"city_name": "Tokyo", "weather_key": "dust", "temp": "18"},

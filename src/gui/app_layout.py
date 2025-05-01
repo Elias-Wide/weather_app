@@ -32,6 +32,7 @@ from src.gui.page_elements import CustomAppBar, CustomIconButton
 class AppLayout(Row):
     def __init__(self, app, page: Page, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.expand = True
         self.app = app
         self.page: Page = page
         self.sidebar = SideBar(navigation_function=self.change_view)
@@ -42,7 +43,7 @@ class AppLayout(Row):
             selected_icon=Icons.ARROW_CIRCLE_RIGHT,
             on_click=self.toggle_nav_rail,
         )
-        self.city = "moscow"
+        self.last_weather_request = None
         # self.city = get_location()
         self._active_view: Control = SearchView(page_view=self)
         self.controls = [
@@ -63,14 +64,14 @@ class AppLayout(Row):
 
     def change_view(self, view_type: str, *args, **kwargs):
         """Change the view of the app layout."""
-        if view_type == SEARCH_VIEW:
-            self.active_view = SearchView(page_view=self, *args, **kwargs)
+
+        if view_type == FAVORITE_VIEW:
+            new_view = FavoritesView
+        elif view_type == SEARCH_VIEW or not self.last_weather_request:
+            new_view = SearchView
         elif view_type == WEATHER_VIEW:
-            self.active_view = WeatherView(
-                page_view=self, city_data={}, *args, **kwargs
-            )
-        elif view_type == FAVORITE_VIEW:
-            self.active_view = FavoritesView(page_view=self, *args, **kwargs)
+            new_view = WeatherView
+        self.active_view = new_view(page_view=self, *args, **kwargs)
 
     def toggle_nav_rail(self, e):
         self.sidebar.visible = not self.sidebar.visible

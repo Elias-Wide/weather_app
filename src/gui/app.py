@@ -54,39 +54,6 @@ class WeatherApp(AppLayout):
             vertical_alignment=CrossAxisAlignment.START,
         )
 
-        # def change_view(e):
-        #     pass
-
-        # def initialize(self):
-        #     self.page.views.append(
-        #         View(
-        #             "/",
-        #             [self.appbar, self],
-        #             padding=padding.all(0),
-        #             bgcolor=Colors.BLUE_GREY_200,
-        #         )
-        #     )
-        #     self.page.update()
-        #     # create an initial board for demonstration if no boards
-        #     if len(self.boards) == 0:
-        #         self.create_new_board("My First Board")
-        #     self.page.go("/")
-
-        # def route_change(self, e):
-        #     troute = TemplateRoute(self.page.route)
-        #     if troute.match("/"):
-        #         self.page.go("/boards")
-        #     elif troute.match("/board/:id"):
-        #         if int(troute.id) > len(self.store.get_boards()):
-        #             self.page.go("/")
-        #             return
-        #         self.set_board_view(int(troute.id))
-        #     elif troute.match("/boards"):
-        #         self.set_all_boards_view()
-        #     elif troute.match("/members"):
-        #         self.set_members_view()
-        #     self.page.update()
-
     def set_page_theme(self, e) -> None:
         """
         Function to set the theme of the page.
@@ -111,7 +78,6 @@ class WeatherApp(AppLayout):
         if self.page.lang == RU:
             self.page.lang = EN
             lang_switcher.text = EN
-            # self.page.controls[0].actions[0].text = "EN"
         else:
             self.page.lang = RU
             lang_switcher.text = RU

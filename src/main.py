@@ -20,8 +20,6 @@ def main(page: Page):
     page.lang = settings.default_lang
     app = WeatherApp(page)
     page.add(app)
-    # create_db_and_tables()
-    # insert_weather_conditions_data(get_conditions_from_api())
 
 
 app(main)
