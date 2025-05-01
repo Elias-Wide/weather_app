@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy import Column, Float, Integer, String, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, declared_attr
 
 
@@ -30,7 +30,13 @@ class WeatherConditions(Base):
 class Favorites(Base):
     """Favorites city db model."""
 
-    name = Column(String, nullable=False)
-    api_id = Column(Integer, nullable=False)
+    region = Column(String, nullable=False)
+    country = Column(String, nullable=False)
     lat = Column(Float, nullable=False)
     lon = Column(Float, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "region", "country", "lat", "lon", name="unique_favorites"
+        ),
+    )

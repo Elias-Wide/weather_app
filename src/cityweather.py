@@ -13,12 +13,13 @@ class CityWeather:
     def __init__(self, response_dict: dict):
         location = response_dict.get("location", {})
         self._name = location.get("name", "Unknown")
-        self._country = location.get("country", "Unknown")
+        self.country = location.get("country", "Unknown")
+        self.region = location.get("region", "Unknow")
         self.localtime = location.get(
             "localtime", datetime.now().strftime("%A, %d %B, %H:%M")
         )
-        self._lat = location.get("lat", 0.0)
-        self._lon = location.get("lon", 0.0)
+        self.lat = location.get("lat", 0.0)
+        self.lon = location.get("lon", 0.0)
 
         current = response_dict.get("current", {})
         self._temp_c = current.get("temp_c", 0.0)
@@ -93,7 +94,6 @@ class CityWeather:
 
     def get_weather_data(self):
         return (
-            self.icon_src,
             self.name,
             self.get_city_date(),
             self.condition,
@@ -101,3 +101,19 @@ class CityWeather:
             self.wind_kph,
             self._humidity,
         )
+
+    def get_weather_data_small(self):
+        return (
+            self.name,
+            self.get_city_date(),
+            self.condition_code,
+            self.temp_c,
+        )
+
+    def formated_data_for_favs(self):
+        return {
+            "region": self.region,
+            "country": self.country,
+            "lat": self.lat,
+            "lon": self.lon,
+        }

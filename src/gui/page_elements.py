@@ -19,6 +19,7 @@ from flet import (
     Container,
 )
 
+from database.dao import FavoritesDAO
 from src.cityweather import CityWeather
 from src.config import settings
 from src.constants import (
@@ -319,3 +320,31 @@ class CityCard(Card):
             alignment=alignment.center,
         )
         super().__init__(content=content, **kwargs)
+
+
+class FavoritesButton(IconButton):
+    def __init__(self, city: CityWeather, *args, **kwargs):
+        self.city = city
+        city_in_favs = FavoritesDAO.get_fav_city(
+            **city.formated_data_for_favs()
+        )
+        print(city_in_favs)
+        if city_in_favs:
+            icon = Icons.FAVORITE_OUTLINED
+            on_click_func = self.delete_from_favs
+        else:
+            icon = Icons.FAVORITE_BORDER
+            on_click_func = self.add_to_favs
+        super().__init__(icon=icon, on_click=on_click_func, *args, **kwargs)
+
+    def delete_from_favs(self, e):
+        if FavoritesDAO.delete_object(**self.city.formated_data_for_favs()):
+            self.icon = Icons.FAVORITE_BORDER
+            self.on_click = self.add_to_favs
+            self.update()
+
+    def add_to_favs(self, e):
+        FavoritesDAO.create(self.city.formated_data_for_favs())
+        self.icon = Icons.FAVORITE_OUTLINED
+        self.on_click = self.delete_from_favs
+        self.update()

@@ -46,7 +46,7 @@ class BaseDAO(Generic[ModelType]):
                     raise None
                 session.delete(result)
                 session.commit()
-                return object_to_delete
+                return True
             except:
                 return None
 
@@ -66,6 +66,25 @@ class FavoritesDAO(BaseDAO):
             db_objs = session.execute(
                 select(cls.model).filter(
                     cls.model.name == name, cls.model.api_id == api_id
+                )
+            )
+            return db_objs.scalars().first()
+
+    @classmethod
+    def get_fav_city(
+        cls,
+        region: str,
+        country: str,
+        lat: float,
+        lon: float,
+    ):
+        with session_maker() as session:
+            db_objs = session.execute(
+                select(cls.model).filter(
+                    cls.model.region == region,
+                    cls.model.country == country,
+                    cls.model.lat == lat,
+                    cls.model.lon == lon,
                 )
             )
             return db_objs.scalars().first()

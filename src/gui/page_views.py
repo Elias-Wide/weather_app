@@ -17,7 +17,7 @@ from flet import (
     Stack,
     Text,
     TextAlign,
-    TextField,
+    TextButton,
     TextThemeStyle,
     MainAxisAlignment,
     ImageRepeat,
@@ -29,7 +29,12 @@ from src.cityweather import CityWeather
 from src.constants import CITY_IMAGE_PATH, FAVORITE_VIEW
 from src.database.dao import FavoritesDAO
 from src.functions import get_city_date
-from src.gui.page_elements import CityCard, SearchField, WeatherIcon
+from src.gui.page_elements import (
+    CityCard,
+    FavoritesButton,
+    SearchField,
+    WeatherIcon,
+)
 
 
 class SearchView(Column):
@@ -91,6 +96,7 @@ class WeatherView(Column):
                 )
             )
         controls[-1].content.controls[0] = WeatherIcon("name")
+        controls[-1].content.controls.append(FavoritesButton(city=city))
         super().__init__(
             controls=[Card(Column(controls), margin=5)],
             expand=True,
@@ -108,6 +114,8 @@ class FavoritesView(Column):
         super().__init__(
             expand=True, alignment=alignment.bottom_right, *args, **kwargs
         )
+        favorites_cities = FavoritesDAO.get_multi()
+        list_cities = []
         self.page_view = page_view
         if not city_card_data:
             self.controls.append(
@@ -212,7 +220,6 @@ class FavoritesView(Column):
                 )
                 fav_counter += 1
                 city_num += 1
-        print("DON!!!!!!!!!!!!!!!!!!!!!")
 
 
 city_card_data = [
