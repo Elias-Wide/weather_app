@@ -1,23 +1,5 @@
-from flet import Page
-from datetime import datetime
-from constants import DWNLD, WEATHER_ICON
-from src.gui.page_elements import CustomAppBar, LoadingGif
+from mtranslate import translate
 
 
-def add_download_gif(page: Page) -> None:
-    """
-    Function to add a loading GIF to the page.
-    It is called when the user submits the search input.
-    """
-    for control in page.controls:
-        if isinstance(control, CustomAppBar):
-            continue
-        if control.key in (WEATHER_ICON, DWNLD):
-            page.remove(control)
-    page.add(LoadingGif(DWNLD))
-    page.update()
-
-
-def get_city_date(city_dt: str):
-    city_dt = datetime.strptime(city_dt, "%Y-%m-%d %H:%M")
-    return city_dt.strftime("%A, %d %B, %H:%M")
+def get_city_name_en(city_name: str):
+    return translate(city_name, "en", "auto")

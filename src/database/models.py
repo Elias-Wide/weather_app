@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Float, Integer, String
+from numbers import Real
+from sqlalchemy import Column, Float, Integer, String, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, declared_attr
 
 
@@ -20,17 +21,13 @@ class Base(DeclarativeBase, PreBase):
     pass
 
 
-class WeatherConditions(Base):
-
-    code = Column(Integer, unique=True)
-    day = Column(String, nullable=False)
-    night = Column(String, nullable=False)
-
-
 class Favorites(Base):
     """Favorites city db model."""
 
     name = Column(String, nullable=False)
-    api_id = Column(Integer, nullable=False)
-    lat = Column(Float, nullable=False)
-    lon = Column(Float, nullable=False)
+    lat = Column(String, nullable=False)
+    lon = Column(String, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("name", "lat", "lon", name="unique_favorites"),
+    )

@@ -5,7 +5,8 @@ SEARCH_LBL: str = "введите город..."
 DEFAULT_ICON_SRC: str = "src/assets/icons/default.svg"
 GIF_PATH: str = "src/assets/gifs/{}.gif"
 CITY_NAME_ERROR: str = "Не удалось найти данный город"
-CITY_IMAGE_PATH: str = "storage/city_images/{}.png"
+WEATHER_ICONS_PATH: str = "storage/weather_icons/"
+
 # FILE EXTENSIONS
 PNG: str = ".png"
 SVG: str = ".svg"

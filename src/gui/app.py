@@ -1,22 +1,9 @@
-import time
 from flet import (
-    app,
-    AppBar,
-    border,
     Colors,
-    Column,
-    Container,
     CrossAxisAlignment,
-    ElevatedButton,
     Icons,
-    IconButton,
-    MainAxisAlignment,
     Page,
-    Text,
-    TextField,
     ThemeMode,
-    VerticalDivider,
-    Row,
 )
 from constants import (
     DWNLD,
@@ -30,11 +17,21 @@ from constants import (
 from src.config import settings
 from src.gui.app_layout import AppLayout
 from src.gui.sidebar import SideBar
-from src.gui.page_elements import CustomAppBar, LoadingGif, WeatherIcon
+from src.gui.page_elements import CustomAppBar, WeatherIcon
 
 
 class WeatherApp(AppLayout):
+    """
+    A class representing the main Weather App layout.
+    """
+
     def __init__(self, page: Page) -> None:
+        """
+        Initializes the WeatherApp.
+
+        Args:
+            page (Page): The main page object for the application.
+        """
         self.page: Page = page
         self.user: str | None = None
         self.appbar = CustomAppBar(
@@ -81,19 +78,6 @@ class WeatherApp(AppLayout):
         else:
             self.page.lang = RU
             lang_switcher.text = RU
-        self.page.update()
-
-    def add_download_gif(self) -> None:
-        """
-        Function to add a loading GIF to the page.
-        It is called when the user submits the search input.
-        """
-        for control in self.page.controls:
-            if isinstance(control, CustomAppBar):
-                continue
-            if control.key in (WEATHER_ICON, DWNLD):
-                self.page.remove(control)
-        self.page.add(LoadingGif(DWNLD))
         self.page.update()
 
     def get_appbar_action_by_key(self, control_keys: tuple[str]) -> None:

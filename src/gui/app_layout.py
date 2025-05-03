@@ -1,36 +1,36 @@
 from flet import (
-    ButtonStyle,
-    Column,
-    Colors,
     Control,
-    Container,
-    ControlState,
     IconButton,
     Icons,
-    padding,
     Row,
     Page,
-    Text,
-    TextButton,
-    TextThemeStyle,
-    TextField,
-    RoundedRectangleBorder,
-    VerticalDivider,
-    border,
-    CrossAxisAlignment,
-    alignment,
 )
 
 from src.config import settings
 from src.constants import FAVORITE_VIEW, SEARCH_VIEW, TOGGLE_BTN, WEATHER_VIEW
-from src.geo_ip import get_location
-from src.gui.page_views import FavoritesView, SearchView, WeatherView
+from src.gui.page_views import (
+    DonwloadView,
+    FavoritesView,
+    SearchView,
+    WeatherView,
+)
 from src.gui.sidebar import SideBar
-from src.gui.page_elements import CustomAppBar, CustomIconButton
 
 
 class AppLayout(Row):
+    """
+    A base layout class for the Weather App.
+    Manages the sidebar, navigation, and active views.
+    """
+
     def __init__(self, app, page: Page, *args, **kwargs):
+        """
+        Initializes the AppLayout.
+
+        Args:
+            app: The main application instance.
+            page (Page): The Flet Page object for the application.
+        """
         super().__init__(*args, **kwargs)
         self.expand = True
         self.app = app
@@ -44,7 +44,6 @@ class AppLayout(Row):
             on_click=self.toggle_nav_rail,
         )
         self.last_weather_request = None
-        # self.city = get_location()
         self._active_view: Control = SearchView(page_view=self)
         self.controls = [
             self.sidebar,
@@ -54,17 +53,36 @@ class AppLayout(Row):
 
     @property
     def active_view(self):
+        """
+        Gets the currently active view.
+
+        Returns:
+            Control: The currently active view.
+        """
         return self._active_view
 
     @active_view.setter
     def active_view(self, view):
+        """
+        Sets the active view and updates the layout.
+
+        Args:
+            view (Control): The new view to set as active.
+        """
         self._active_view = view
         self.controls[-1] = self._active_view
         self.page.update()
 
     def change_view(self, view_type: str, *args, **kwargs):
-        """Change the view of the app layout."""
+        """
+        Changes the view of the app layout based on the view type.
 
+        Args:
+            view_type (str): The type of view to switch to.
+            *args: Additional arguments for the view.
+            **kwargs: Additional keyword arguments for the view.
+        """
+        self.active_download_view()
         if view_type == FAVORITE_VIEW:
             new_view = FavoritesView
         elif view_type == SEARCH_VIEW or not self.last_weather_request:
@@ -73,7 +91,23 @@ class AppLayout(Row):
             new_view = WeatherView
         self.active_view = new_view(page_view=self, *args, **kwargs)
 
+    def active_download_view(self, *args, **kwargs):
+        """
+        Activates the download view.
+
+        Args:
+            *args: Additional arguments for the view.
+            **kwargs: Additional keyword arguments for the view.
+        """
+        self.active_view = DonwloadView(page_view=self, *args, **kwargs)
+
     def toggle_nav_rail(self, e):
+        """
+        Toggles the visibility of the navigation rail (sidebar).
+
+        Args:
+            e: The event object triggered by the toggle button.
+        """
         self.sidebar.visible = not self.sidebar.visible
         self.toggle_nav_rail_button.selected = (
             not self.toggle_nav_rail_button.selected

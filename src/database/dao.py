@@ -1,11 +1,10 @@
-from datetime import datetime
-from typing import Generic, Optional, Type, TypeVar
+from typing import Generic, TypeVar
 
 from sqlalchemy import and_, insert, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.database.db import session_maker
-from src.database.models import Base, Favorites, WeatherConditions
+from src.database.models import Base, Favorites
 
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -46,8 +45,10 @@ class BaseDAO(Generic[ModelType]):
                     raise None
                 session.delete(result)
                 session.commit()
-                return object_to_delete
+                print("SUCCES DELETE")
+                return True
             except:
+                print("DELETE ERROR")
                 return None
 
     @classmethod
@@ -61,23 +62,18 @@ class FavoritesDAO(BaseDAO):
     model = Favorites
 
     @classmethod
-    def get_favorites_city(cls, name: str, api_id: int):
+    def get_fav_city(
+        cls,
+        name: str,
+        lat: float,
+        lon: float,
+    ):
         with session_maker() as session:
             db_objs = session.execute(
                 select(cls.model).filter(
-                    cls.model.name == name, cls.model.api_id == api_id
+                    cls.model.name == name,
+                    cls.model.lat == lat,
+                    cls.model.lon == lon,
                 )
             )
             return db_objs.scalars().first()
-
-
-class WeatherConditionsDAO(BaseDAO):
-    model = WeatherConditions
-
-    @classmethod
-    def get_condition_by_code(cls, code: int) -> str:
-        with session_maker() as session:
-            db_objs = session.execute(
-                select(cls.model.__table__).filter(cls.model.code == code)
-            )
-            return db_objs.mappings().first()

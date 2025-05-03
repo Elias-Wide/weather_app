@@ -1,9 +1,26 @@
-from src.database.db import create_db_and_tables
-from src.parse_api import (
-    get_conditions_from_api,
-    insert_weather_conditions_data,
-)
+import os
+from posixpath import abspath, dirname
+from src.database.db import create_db_and_tables, sqlite_database
+from src.config import settings
 
 
-create_db_and_tables()
-insert_weather_conditions_data(get_conditions_from_api())
+def is_local_db_exists(db_path: str) -> bool:
+    """
+    Checks if the local database file exists.
+
+    Args:
+        db_path (str): The path to the database file.
+
+    Returns:
+        bool: True if the database file exists, False otherwise.
+    """
+    return os.path.exists(os.path.abspath(".") + f"/{settings.db_name}.db")
+
+
+def init_database(db_path: str = sqlite_database) -> None:
+    if is_local_db_exists(db_path):
+        print("Local database exists.")
+        return
+    else:
+        create_db_and_tables()
+        print("Local database does not exist. \nCreating DB...")
