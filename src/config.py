@@ -1,10 +1,17 @@
-API_URL: str = (
-    "https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric&lang={lang}"
-)
-APP_NAME: str = "Погод!КА"
-APP_VERSION: str = "0.1.0"
-API_KEY: str = "12ee6ee708d8142eeeb7484bbdbe266c"
-RU: str = "RU"
-EN: str = "EN"
-DEFAULT_LANG: str = EN
-LANGUAGES: tuple = (RU, EN)
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file="main.env", env_file_encoding="utf-8", extra="ignore"
+    )
+    weather_api_token: str
+    api_url: str
+    app_name: str
+    app_version: str
+    ip_info_token: str
+    default_lang: str
+    db_name: str
+
+
+settings = Settings()
