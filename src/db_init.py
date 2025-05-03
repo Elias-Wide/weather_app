@@ -1,6 +1,5 @@
 import os
 from posixpath import abspath, dirname
-import sys
 from src.database.db import create_db_and_tables, sqlite_database
 from src.config import settings
 
@@ -24,4 +23,4 @@ def init_database(db_path: str = sqlite_database) -> None:
         return
     else:
         create_db_and_tables()
-        print("Local database does not exist." "creating DB...")
+        print("Local database does not exist. \nCreating DB...")

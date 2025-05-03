@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from parse_api import get_weather_icon
 from src.constants import DEFAULT_ICON_SRC
 from src.weather_conditions import weather_conditions
 
@@ -12,25 +13,25 @@ class CityWeather:
 
     def __init__(self, response_dict: dict):
         location = response_dict.get("location", {})
-        self._name = location.get("name", "Unknown")
+        self.name = location.get("name", "Unknown")
         self.country = location.get("country", "Unknown")
         self.region = location.get("region", "Unknow")
         self.localtime = location.get(
             "localtime", datetime.now().strftime("%A, %d %B, %H:%M")
         )
-        self.lat = location.get("lat", 0.0)
-        self.lon = location.get("lon", 0.0)
+        self.lat = str(location.get("lat", 0.0))
+        self.lon = str(location.get("lon", 0.0))
 
         current = response_dict.get("current", {})
+        self.is_day = current.get("is_day", 0)
         self._temp_c = current.get("temp_c", 0.0)
         self._wind_kph = current.get("wind_kph", 0.0)
         self._wind_dir = current.get("wind_dir", "Unknown")
-        self._humidity = current.get("humidity", 0)
+        self.humidity = current.get("humidity", 0)
         self.condition_code = current.get("condition", {}).get("code", 1000)
-        self.icon_src = current.get("condition", {}).get(
+        self.icon_src = "https:" + current.get("condition", {}).get(
             "icon", DEFAULT_ICON_SRC
         )
-        self.is_day = current.get("is_day", 0)
         self.condition = self.get_condition_text()
 
     @property
@@ -48,6 +49,20 @@ class CityWeather:
     @country.setter
     def country(self, value):
         self._country = value
+
+    @property
+    def icon_path(self):
+        return get_weather_icon(self.get_icon_name(), self.icon_src)
+
+    @property
+    def condition_code(self):
+        return self._condition_code
+
+    @condition_code.setter
+    def condition_code(self, value):
+        if value == 1000 and not self.is_day:
+            value += 1
+        self._condition_code = value
 
     @property
     def temp_c(self):
@@ -69,12 +84,20 @@ class CityWeather:
         self._wind_kph = value
 
     def get_condition_text(self):
-        if self.condition_code == 1000 and not self.is_day:
-            return {"EN": "Clear", "RU": "Ясно"}["RU"]
-        return weather_conditions[self.condition_code]["RU"]
+        return weather_conditions[self.condition_code]["EN"]
 
     def formatted_wind_kph(self):
-        return f"Wind: {self._wind_kph}kp/h"
+        return f"Wind: {self._wind_kph} kp/h"
+
+    def formatted_humidity(self):
+        return f"Humidity: {self.humidity}%"
+
+    def get_city_local_time(self):
+        try:
+            city_dt = datetime.strptime(self.localtime, "%H:%M")
+            return city_dt.strftime("%H:%M")
+        except ValueError:
+            return datetime.now().strftime("%H:%M")
 
     def get_city_date(self):
         try:
@@ -88,6 +111,9 @@ class CityWeather:
             f"CityWeather(name={self._name}, country={self._country}, "
             f"temp_c={self._temp_c}, wind_kph={self._wind_kph})"
         )
+
+    def get_icon_name(self):
+        return f"{self.condition_code}_{self.is_day}.png"
 
     def get_weather_data(self):
         return (
@@ -109,7 +135,7 @@ class CityWeather:
 
     def formated_data_for_favs(self):
         return {
-            "region": self.region,
+            "name": self.name,
             "lat": self.lat,
             "lon": self.lon,
         }

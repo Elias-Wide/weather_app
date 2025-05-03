@@ -1,5 +1,6 @@
 weather_conditions = {
     1000: {"EN": "Sunny", "RU": "Солнечно"},
+    1001: {"EN": "Clear", "RU": "Ясно"},
     1003: {"EN": "Partly cloudy", "RU": "Переменная облачность"},
     1006: {"EN": "Cloudy", "RU": "Облачно"},
     1009: {"EN": "Overcast", "RU": "Пасмурно"},

@@ -10,6 +10,7 @@ from flet import (
     DragTarget,
     DragTargetEvent,
     IconButton,
+    ProgressRing,
     Image,
     ImageFit,
     padding,
@@ -25,13 +26,13 @@ from flet import (
     CrossAxisAlignment,
 )
 
-from parse_api import get_city_weather
+from parse_api import get_city_weather, get_weather_icon
 from src.cityweather import CityWeather
-from src.constants import CITY_IMAGE_PATH, FAVORITE_VIEW
+from src.constants import FAVORITE_VIEW, WEATHER_VIEW
 from src.database.dao import FavoritesDAO
-from src.functions import get_city_date
 from src.gui.page_elements import (
     CityCard,
+    CityCardLarge,
     FavoritesButton,
     SearchField,
     WeatherIcon,
@@ -53,7 +54,6 @@ class SearchView(Column):
             Container(
                 SearchField(page_view=page_view),
                 alignment=alignment.center,
-                bgcolor=Colors.BLUE_GREY,
                 expand=True,
                 padding=padding.only(left=10, right=10, top=10),
             )
@@ -66,44 +66,35 @@ class WeatherView(Column):
     It contains an image and a weather condition in the City.
     """
 
+    view_type = WEATHER_VIEW
+
     def __init__(self, page_view, *args, **kwargs):
-        self.page_view = page_view
-        city: CityWeather = page_view.last_weather_request
-        controls = [
-            Container(
-                Column(
-                    [],
-                    expand=True,
-                    alignment=alignment.center,
-                ),
-                expand=True,
-            )
-        ]
-        for data in city.get_weather_data():
-            controls[-1].content.controls.append(
-                Card(
-                    Row(
-                        [
-                            Text(
-                                data,
-                                text_align=TextAlign.CENTER,
-                                theme_style=TextThemeStyle.BODY_LARGE,
-                                expand=True,
-                            )
-                        ],
-                        expand=True,
-                        alignment=CrossAxisAlignment.CENTER,
-                    ),
-                )
-            )
-        controls[-1].content.controls[0] = WeatherIcon("name")
-        controls[-1].content.controls.append(FavoritesButton(city=city))
         super().__init__(
-            controls=[Card(Column(controls), margin=5)],
             expand=True,
+            alignment=CrossAxisAlignment.END,
             *args,
             **kwargs,
         )
+        self.page_view = page_view
+        city: CityWeather = page_view.last_weather_request
+        self.controls = [
+            Container(
+                Card(
+                    Row(
+                        [
+                            CityCardLarge(city, page_view),
+                        ],
+                        alignment=MainAxisAlignment.CENTER,
+                    ),
+                    expand=True,
+                    color=Colors.SURFACE,
+                ),
+                expand=True,
+            ),
+        ]
+
+    def __repr__(self):
+        return f"{self.view_type} | {super().__str__()}"
 
 
 class FavoritesView(Column):
@@ -111,33 +102,37 @@ class FavoritesView(Column):
     This class represents the vieww with favorite cities.
     """
 
+    view_type = FAVORITE_VIEW
+
     def __init__(self, page_view, *args, **kwargs):
         super().__init__(
             expand=True, alignment=alignment.bottom_right, *args, **kwargs
         )
         self.page_view = page_view
         list_cities = [
-            CityWeather(get_city_weather(city.region))
+            CityWeather(get_city_weather(city.name))
             for city in FavoritesDAO.get_multi()
         ]
         if not list_cities:
             self.controls.append(
                 Container(
-                    Row(
-                        [
-                            IconButton(
-                                Icons.ADD_ROUNDED,
-                                expand=True,
-                                icon_size=100,
-                                height=500,
-                            )
-                        ],
-                        height=1000,
-                        alignment=CrossAxisAlignment.CENTER,
+                    Card(
+                        Row(
+                            [
+                                Text(
+                                    "My cities",
+                                    text_align=TextAlign.CENTER,
+                                    expand=True,
+                                    color=Colors.GREY,
+                                ),
+                            ],
+                            alignment=CrossAxisAlignment.CENTER,
+                            expand=True,
+                        ),
                         expand=True,
                     ),
                     expand=True,
-                )
+                ),
             )
         else:
             self.set_city_cards(list_cities)
@@ -207,10 +202,35 @@ class FavoritesView(Column):
                     Container(
                         Draggable(
                             group="color",
-                            content=CityCard(city),
+                            content=CityCard(city, self.page_view),
                         ),
-                        # expand=True,
                     )
                 )
                 fav_counter += 1
                 city_num += 1
+
+
+class DonwloadView(Row):
+    def __init__(self, page_view, *args, **kwargs):
+        super().__init__(
+            expand=True,
+            alignment=CrossAxisAlignment.CENTER,
+        )
+        self.controls = [
+            Column(
+                [
+                    Container(
+                        ProgressRing(
+                            width=100,
+                            height=100,
+                            expand=True,
+                            animate_opacity=True,
+                        ),
+                        alignment=alignment.center,
+                        expand=True,
+                    )
+                ],
+                expand=True,
+            )
+        ]
+        self.page_view = page_view

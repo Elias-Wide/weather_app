@@ -3,18 +3,11 @@ from flet import (
     Icon,
     Icons,
     FloatingActionButton,
-    MainAxisAlignment,
     NavigationRail,
     NavigationRailDestination,
     NavigationRailLabelType,
-    Row,
-    Text,
-    VerticalDivider,
-    Colors,
     Container,
-    border_radius,
     IconButton,
-    alignment,
     padding,
     margin,
 )
@@ -84,11 +77,3 @@ class SideBar(Container):
                 self.navigation_function(WEATHER_VIEW)
             elif e.control.selected_index == 1:
                 self.navigation_function(FAVORITE_VIEW)
-
-        # self.navigation_function(e)
-        # print(self.page)
-        # print(self.page.controls)
-        # self.page.active_view = Column(
-        #     [self.top_nav_rail, view],
-        #     tight=True,
-        # )

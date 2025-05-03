@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import Generic, Optional, Type, TypeVar
+from typing import Generic, TypeVar
 
 from sqlalchemy import and_, insert, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -46,8 +45,10 @@ class BaseDAO(Generic[ModelType]):
                     raise None
                 session.delete(result)
                 session.commit()
+                print("SUCCES DELETE")
                 return True
             except:
+                print("DELETE ERROR")
                 return None
 
     @classmethod
@@ -63,13 +64,14 @@ class FavoritesDAO(BaseDAO):
     @classmethod
     def get_fav_city(
         cls,
-        region: str,
+        name: str,
         lat: float,
         lon: float,
     ):
         with session_maker() as session:
             db_objs = session.execute(
                 select(cls.model).filter(
+                    cls.model.name == name,
                     cls.model.lat == lat,
                     cls.model.lon == lon,
                 )

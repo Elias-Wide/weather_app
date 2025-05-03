@@ -1,6 +1,8 @@
 from datetime import datetime
+import os
 import requests
-
+from functools import lru_cache
+from constants import WEATHER_ICONS_PATH
 from src.config import settings
 
 
@@ -27,6 +29,7 @@ def get_conditions_from_api() -> list[dict[str]]:
     )
 
 
+@lru_cache
 def get_city_weather(city: str) -> dict:
     """
     Fetches weather data for a specific city from the Weather API.
@@ -48,3 +51,45 @@ def get_city_weather(city: str) -> dict:
     if response.status_code != 200:
         return None
     return response.json()
+
+
+def get_weather_icon(icon_name: str, icon_src: str):
+    icon_path = find_file_in_directory(icon_name, WEATHER_ICONS_PATH)
+    if not icon_path:
+        download_weather_icon(icon_src, icon_name)
+    return find_file_in_directory(icon_name, WEATHER_ICONS_PATH)
+
+
+def download_weather_icon(url: str, icon_name: str) -> None:
+    """
+    Downloads an image from the given URL and saves it to the specified path.
+
+    Args:
+        url (str): The URL of the image to download.
+        icon_name (str): file_name for the image will be saved.
+    """
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        with open(WEATHER_ICONS_PATH + icon_name, "wb") as file:
+            for chunk in response.iter_content(1024):
+                file.write(chunk)
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to download image: {e}")
+
+
+def find_file_in_directory(file_name: str, directory: str) -> str | None:
+    """
+    Searches for a file by name in the specified directory.
+
+    Args:
+        file_name (str): The name of the file to search for.
+        directory (str): The directory to search in.
+
+    Returns:
+        str | None: The full path to the file if found, otherwise None.
+    """
+    for root, _, files in os.walk(directory):
+        if file_name in files:
+            return os.path.join(root, file_name)
+    return None

@@ -7,7 +7,7 @@ from src.database.models import Base
 
 sqlite_database = f"sqlite:///{settings.db_name}.db"
 
-engine = create_engine(sqlite_database, echo=True)
+engine = create_engine(sqlite_database)
 session_maker = sessionmaker(engine)
 
 
