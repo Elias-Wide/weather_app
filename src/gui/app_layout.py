@@ -109,7 +109,5 @@ class AppLayout(Row):
             e: The event object triggered by the toggle button.
         """
         self.sidebar.visible = not self.sidebar.visible
-        self.toggle_nav_rail_button.selected = (
-            not self.toggle_nav_rail_button.selected
-        )
+        self.toggle_nav_rail_button.selected = not self.toggle_nav_rail_button.selected
         self.page.update()
