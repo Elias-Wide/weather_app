@@ -46,9 +46,7 @@ class SearchView(Column):
     """
 
     def __init__(self, page_view, *args, **kwargs):
-        super().__init__(
-            expand=True, alignment=alignment.bottom_right, *args, **kwargs
-        )
+        super().__init__(expand=True, alignment=alignment.bottom_right, *args, **kwargs)
         self.page_view = page_view
         self.controls = [
             Container(
@@ -105,9 +103,7 @@ class FavoritesView(Column):
     view_type = FAVORITE_VIEW
 
     def __init__(self, page_view, *args, **kwargs):
-        super().__init__(
-            expand=True, alignment=alignment.bottom_right, *args, **kwargs
-        )
+        super().__init__(expand=True, alignment=alignment.bottom_right, *args, **kwargs)
         self.page_view = page_view
         list_cities = [
             CityWeather(get_city_weather(city.name))

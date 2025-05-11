@@ -386,9 +386,7 @@ class CityCardLarge(Card):
             Column(
                 [
                     TextRow(city.name, style=TextThemeStyle.DISPLAY_MEDIUM),
-                    TextRow(
-                        city.get_city_date(), style=TextThemeStyle.BODY_MEDIUM
-                    ),
+                    TextRow(city.get_city_date(), style=TextThemeStyle.BODY_MEDIUM),
                     city_condition_block,
                     TextRow(
                         city.formatted_wind_kph(),
@@ -423,9 +421,7 @@ class FavoritesButton(IconButton):
             city (CityWeather): The CityWeather object representing the city.
         """
         self.city = city
-        city_in_favs = FavoritesDAO.get_fav_city(
-            **city.formated_data_for_favs()
-        )
+        city_in_favs = FavoritesDAO.get_fav_city(**city.formated_data_for_favs())
         if city_in_favs:
             icon = Icons.FAVORITE_OUTLINED
             on_click_func = self.delete_from_favs
@@ -464,9 +460,7 @@ class TextRow(Row):
     A row containing a single centered text element.
     """
 
-    def __init__(
-        self, text: str, style: Optional[TextThemeStyle], *args, **kwargs
-    ):
+    def __init__(self, text: str, style: Optional[TextThemeStyle], *args, **kwargs):
         """
         Initializes the TextRow.
 
