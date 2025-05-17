@@ -6,7 +6,7 @@ from src.config import settings
 
 def is_local_db_exists(db_path: str) -> bool:
     """
-    Checks if the local database file exists.
+    Checks if the local database file exists.ls
 
     Args:
         db_path (str): The path to the database file.

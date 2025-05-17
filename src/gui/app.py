@@ -14,6 +14,7 @@ from constants import (
     WEATHER_ICON,
 )
 
+from localizations import TITLE
 from src.config import settings
 from src.gui.app_layout import AppLayout
 from src.gui.sidebar import SideBar
@@ -33,10 +34,8 @@ class WeatherApp(AppLayout):
             page (Page): The main page object for the application.
         """
         self.page: Page = page
-        self.user: str | None = None
         self.appbar = CustomAppBar(
-            title=settings.app_name,
-            lang=page.lang,
+            title=self.page.title,
             change_theme_func=self.set_page_theme,
             change_language_func=self.set_page_language,
         )
@@ -73,11 +72,19 @@ class WeatherApp(AppLayout):
         """
         lang_switcher = self.get_appbar_action_by_key(LANG_SWITCHER)
         if self.page.lang == RU:
+            lang_switcher.text = EN.upper()
             self.page.lang = EN
-            lang_switcher.text = EN
+            if self.last_weather_request:
+                self.last_weather_request.lang = EN
+            self.appbar.change_lang()
+            self.change_lang()
         else:
             self.page.lang = RU
-            lang_switcher.text = RU
+            lang_switcher.text = RU.upper()
+            if self.last_weather_request:
+                self.last_weather_request.lang = RU
+            self.appbar.change_lang()
+            self.change_lang()
         self.page.update()
 
     def get_appbar_action_by_key(self, control_keys: tuple[str]) -> None:

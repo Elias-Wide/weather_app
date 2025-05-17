@@ -28,4 +28,6 @@ class Favorites(Base):
     lat = Column(String, nullable=False)
     lon = Column(String, nullable=False)
 
-    __table_args__ = (UniqueConstraint("name", "lat", "lon", name="unique_favorites"),)
+    __table_args__ = (
+        UniqueConstraint("name", "lat", "lon", name="unique_favorites"),
+    )

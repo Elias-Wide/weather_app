@@ -1,8 +1,10 @@
 from datetime import datetime
+import locale
 
+from localizations import localize_city_name
 from parse_api import get_weather_icon
 from src.constants import DEFAULT_ICON_SRC
-from src.weather_conditions import weather_conditions
+from localizations import HUMIDITY, WIND, weather_conditions
 
 
 class CityWeather:
@@ -11,7 +13,8 @@ class CityWeather:
     Initializes attributes based on the keys in the response dictionary.
     """
 
-    def __init__(self, response_dict: dict):
+    def __init__(self, response_dict: dict, lang: str = "en"):
+        self.lang = lang
         location = response_dict.get("location", {})
         self.name = location.get("name", "Unknown")
         self.country = location.get("country", "Unknown")
@@ -32,7 +35,7 @@ class CityWeather:
         self.icon_src = "https:" + current.get("condition", {}).get(
             "icon", DEFAULT_ICON_SRC
         )
-        self.condition = self.get_condition_text()
+        # self.condition = self.get_condition_text()
 
     @property
     def name(self):
@@ -83,14 +86,17 @@ class CityWeather:
     def wind_kph(self, value):
         self._wind_kph = value
 
+    def get_formatted_name(self):
+        return localize_city_name(self.name, self.lang).capitalize()
+
     def get_condition_text(self):
-        return weather_conditions[self.condition_code]["EN"]
+        return weather_conditions[self.condition_code][self.lang]
 
     def formatted_wind_kph(self):
-        return f"Wind: {self._wind_kph} kp/h"
+        return WIND[self.lang].format(self._wind_kph)
 
     def formatted_humidity(self):
-        return f"Humidity: {self.humidity}%"
+        return HUMIDITY[self.lang].format(self.humidity)
 
     def get_city_local_time(self):
         try:
@@ -100,11 +106,44 @@ class CityWeather:
             return datetime.now().strftime("%H:%M")
 
     def get_city_date(self):
+        """
+        Returns the formatted local date and time for the city.
+        For English: e.g., "Saturday, 18 May, 00:40"
+        For Russian: e.g., "Суббота, 18 Мая, 00:40"
+        """
         try:
             city_dt = datetime.strptime(self.localtime, "%Y-%m-%d %H:%M")
-            return city_dt.strftime("%A, %d %B, %H:%M")
         except ValueError:
-            return datetime.now().strftime("%A, %d %B, %H:%M")
+            city_dt = datetime.now()
+        if self.lang == "ru":
+            days = [
+                "Понедельник",
+                "Вторник",
+                "Среда",
+                "Четверг",
+                "Пятница",
+                "Суббота",
+                "Воскресенье",
+            ]
+            months = [
+                "",
+                "Января",
+                "Февраля",
+                "Марта",
+                "Апреля",
+                "Мая",
+                "Июня",
+                "Июля",
+                "Августа",
+                "Сентября",
+                "Октября",
+                "Ноября",
+                "Декабря",
+            ]
+            weekday = days[city_dt.weekday()]
+            month = months[city_dt.month]
+            return f"{weekday}, {city_dt.day} {month}, {city_dt.strftime(u'%H:%M')}"
+        return city_dt.strftime("%A, %d %B, %H:%M")
 
     def __repr__(self):
         return (
