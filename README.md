@@ -1,6 +1,7 @@
 # WeatherApp
 
-WeatherApp is an application designed to display current weather information for selected cities. It provides a user-friendly interface to view weather details such as temperature, humidity, wind speed, and more.
+WeatherApp is an application designed to display current weather information for selected cities. It provides a user-friendly interface to view weather details such as temperature, humidity, wind speed, and more.  
+The application uses [weatherapi.com](https://weatherapi.com) as its source for real-time weather data.
 
 ---
 
@@ -12,6 +13,8 @@ WeatherApp is an application designed to display current weather information for
 - **Theme Switching**: Toggle between light and dark themes.
 - **Cross-Platform**: Works on Windows, macOS, Linux, Android, iOS, and web browsers.
 - **Weather API Integration**: Fetch real-time weather data from Weather API.
+- **Weather Data Caching**: Weather data for each city is cached; API requests are made no more than once every 10 minutes per city.
+- **Weather Icon Caching**: Weather icons are downloaded from the service as requests are made. Each icon is then saved locally to avoid repeated requests in the future.
 
 ---
 

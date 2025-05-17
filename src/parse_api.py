@@ -1,9 +1,10 @@
-from datetime import datetime
 import os
 import requests
-from functools import lru_cache
+from cachetools import cached, TTLCache
 from constants import WEATHER_ICONS_PATH
 from src.config import settings
+
+city_weather_cache = TTLCache(maxsize=100, ttl=600)
 
 
 def get_conditions_from_api() -> list[dict[str]]:
@@ -13,6 +14,8 @@ def get_conditions_from_api() -> list[dict[str]]:
     Returns:
         list[dict[str]]: A list of dictionaries containing weather condition codes,
         day descriptions, and night descriptions.
+
+    Used during development to collect data for displaying text in localizations.py.
     """
     response = requests.get(
         url="https://www.weatherapi.com/docs/weather_conditions.json"
@@ -29,7 +32,7 @@ def get_conditions_from_api() -> list[dict[str]]:
     )
 
 
-@lru_cache
+@cached(city_weather_cache)
 def get_city_weather(city: str) -> dict:
     """
     Fetches weather data for a specific city from the Weather API.

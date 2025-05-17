@@ -6,10 +6,11 @@ from flet import (
     Page,
 )
 
+from cityweather import CityWeather
 from src.config import settings
 from src.constants import FAVORITE_VIEW, SEARCH_VIEW, TOGGLE_BTN, WEATHER_VIEW
 from src.gui.page_views import (
-    DonwloadView,
+    DownloadView,
     FavoritesView,
     SearchView,
     WeatherView,
@@ -35,7 +36,9 @@ class AppLayout(Row):
         self.expand = True
         self.app = app
         self.page: Page = page
-        self.sidebar = SideBar(navigation_function=self.change_view)
+        self.sidebar = SideBar(
+            navigation_function=self.change_view, page=self.page
+        )
         self.toggle_nav_rail_button = IconButton(
             key=TOGGLE_BTN,
             icon=Icons.ARROW_CIRCLE_LEFT,
@@ -43,7 +46,7 @@ class AppLayout(Row):
             selected_icon=Icons.ARROW_CIRCLE_RIGHT,
             on_click=self.toggle_nav_rail,
         )
-        self.last_weather_request = None
+        self.last_weather_request: CityWeather | None = None
         self._active_view: Control = SearchView(page_view=self)
         self.controls = [
             self.sidebar,
@@ -99,7 +102,7 @@ class AppLayout(Row):
             *args: Additional arguments for the view.
             **kwargs: Additional keyword arguments for the view.
         """
-        self.active_view = DonwloadView(page_view=self, *args, **kwargs)
+        self.active_view = DownloadView(page_view=self, *args, **kwargs)
 
     def toggle_nav_rail(self, e):
         """
@@ -109,5 +112,19 @@ class AppLayout(Row):
             e: The event object triggered by the toggle button.
         """
         self.sidebar.visible = not self.sidebar.visible
-        self.toggle_nav_rail_button.selected = not self.toggle_nav_rail_button.selected
+        self.toggle_nav_rail_button.selected = (
+            not self.toggle_nav_rail_button.selected
+        )
+        self.page.update()
+
+    def change_lang(self):
+        """
+        Changes the language of the app layout.
+        """
+        self.sidebar.change_lang()
+        view_type = self.active_view.view_type
+        self.active_download_view()
+        self.change_view(
+            view_type,
+        )
         self.page.update()

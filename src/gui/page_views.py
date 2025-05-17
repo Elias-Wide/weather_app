@@ -26,9 +26,15 @@ from flet import (
     CrossAxisAlignment,
 )
 
+from localizations import UI_LABELS
 from parse_api import get_city_weather, get_weather_icon
 from src.cityweather import CityWeather
-from src.constants import FAVORITE_VIEW, WEATHER_VIEW
+from src.constants import (
+    DOWNLOAD_VIEW,
+    FAVORITE_VIEW,
+    SEARCH_VIEW,
+    WEATHER_VIEW,
+)
 from src.database.dao import FavoritesDAO
 from src.gui.page_elements import (
     CityCard,
@@ -45,8 +51,12 @@ class SearchView(Column):
     It contains a search bar.
     """
 
+    view_type = SEARCH_VIEW
+
     def __init__(self, page_view, *args, **kwargs):
-        super().__init__(expand=True, alignment=alignment.bottom_right, *args, **kwargs)
+        super().__init__(
+            expand=True, alignment=alignment.bottom_right, *args, **kwargs
+        )
         self.page_view = page_view
         self.controls = [
             Container(
@@ -103,10 +113,12 @@ class FavoritesView(Column):
     view_type = FAVORITE_VIEW
 
     def __init__(self, page_view, *args, **kwargs):
-        super().__init__(expand=True, alignment=alignment.bottom_right, *args, **kwargs)
+        super().__init__(
+            expand=True, alignment=alignment.bottom_right, *args, **kwargs
+        )
         self.page_view = page_view
         list_cities = [
-            CityWeather(get_city_weather(city.name))
+            CityWeather(get_city_weather(city.name), self.page_view.page.lang)
             for city in FavoritesDAO.get_multi()
         ]
         if not list_cities:
@@ -116,7 +128,9 @@ class FavoritesView(Column):
                         Row(
                             [
                                 Text(
-                                    "My cities",
+                                    UI_LABELS["FAVORITES"][
+                                        self.page_view.page.lang
+                                    ],
                                     text_align=TextAlign.CENTER,
                                     expand=True,
                                     color=Colors.GREY,
@@ -206,7 +220,9 @@ class FavoritesView(Column):
                 city_num += 1
 
 
-class DonwloadView(Row):
+class DownloadView(Row):
+    view_type = DOWNLOAD_VIEW
+
     def __init__(self, page_view, *args, **kwargs):
         super().__init__(
             expand=True,
