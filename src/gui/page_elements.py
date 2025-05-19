@@ -22,10 +22,8 @@ from flet import (
     ProgressRing,
 )
 
-from database.dao import FavoritesDAO
-from localizations import TITLE, get_city_name_en
-from localizations import UI_LABELS
 from src.cityweather import CityWeather
+from src.database.dao import FavoritesDAO, favorites_cache
 from src.config import settings
 from src.constants import (
     LANG_SWITCHER,
@@ -34,6 +32,7 @@ from src.constants import (
     WEATHER_ICON,
     WEATHER_VIEW,
 )
+from src.localizations import TITLE, get_city_name_en, UI_LABELS
 from src.parse_api import get_city_weather, get_weather_icon
 
 
@@ -454,6 +453,7 @@ class FavoritesButton(IconButton):
             self.icon = Icons.FAVORITE_BORDER
             self.on_click = self.add_to_favs
             self.update()
+            favorites_cache.clear()
 
     def add_to_favs(self, e):
         """
@@ -465,6 +465,7 @@ class FavoritesButton(IconButton):
         FavoritesDAO.create(self.city.formated_data_for_favs())
         self.icon = Icons.FAVORITE_OUTLINED
         self.on_click = self.delete_from_favs
+        favorites_cache.clear()
         self.update()
 
 
