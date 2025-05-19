@@ -7,7 +7,10 @@ from src.config import settings
 from src.database.db import session_maker
 from src.database.models import Base, Favorites
 
+from cachetools import cached, TTLCache
 
+
+favorites_cache = TTLCache(maxsize=100, ttl=120)
 ModelType = TypeVar("ModelType", bound=Base)
 
 
@@ -59,6 +62,7 @@ class BaseDAO(Generic[ModelType]):
             return db_objs.scalars().all()
 
     @classmethod
+    @cached(cache=favorites_cache)
     def get_favorites_by_page(cls, page: int = 1, page_size: int = 6):
         """
         Returns a tuple (items, total_count, has_prev, has_next) for pagination.
