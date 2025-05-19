@@ -9,7 +9,6 @@ class Settings(BaseSettings):
     api_url: str
     app_name: str
     app_version: str
-    ip_info_token: str
     default_lang: str
     db_name: str
 

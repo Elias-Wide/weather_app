@@ -21,16 +21,22 @@ The application uses [weatherapi.com](https://weatherapi.com) as its source for 
 ## Project Structure
 
 - **`src/`**: Main directory containing the application source code.
-  - **`database/`**: Models and database management.
-  - **`gui/`**: User interface components and pages.
-  - **`assets/`**: Static files such as weather icons.
+  - **`assets/`**: Static files such as weather icons and images.
   - **`config/`**: Configuration files and application settings.
-  - **`parse_api.py`**: Logic for interacting with the Weather API.
-  - **`weather_conditions.py`**: Dictionary of weather conditions with translations.
-
+  - **`constants.py`**: Common constants used throughout the app.
+  - **`cityweather.py`**: Data model and logic for city weather representation.
+  - **`database/`**: Database models and management logic.
+  - **`gui/`**: User interface components, widgets, and page views.
+    - **`app.py`**: Main application logic and layout.
+    - **`page_elements.py`**: UI elements and widgets.
+    - **`page_views.py`**: Page views and navigation.
+    - **`sidebar.py`**: Sidebar navigation logic.
+  - **`localizations.py`**: Localization logic and dictionaries for UI and weather conditions.
+  - **`parse_api.py`**: Logic for interacting with the Weather API and caching.
 - **`pyproject.toml`**: Dependency and project configuration file.
 - **`README.md`**: Project documentation.
-- **`.env`**: File for storing environment variables like API keys.
+- **`.env` / `main.env`**: File for storing environment variables like API keys.
+- **`venv/`**: Virtual environment directory (should be in `.gitignore`).
 
 ---
 
@@ -59,5 +65,6 @@ The project uses the following key dependencies:
 - **pydantic-settings**: For managing application settings.
 - **requests**: For interacting with the Weather API.
 - **mtranslate**: For text translations.
+- **cachetools**: For caching API responses.
 
 The full list of dependencies can be found in the `pyproject.toml` file.

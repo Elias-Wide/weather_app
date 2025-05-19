@@ -1,7 +1,7 @@
 [project]
 name = "weather-app"
 version = "0.1.0"
-description = ""
+description = "WeatherApp is an application designed to display current weather information for selected cities."
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [
@@ -12,6 +12,7 @@ dependencies = [
   "mtranslate>=1.8",
   "pydantic_settings==2.9.1",
   "sqlalchemy>=2.0.40",
+  "cachetools>=5.5.2",
 ]
 
 [tool.flet]
