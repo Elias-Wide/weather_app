@@ -49,8 +49,7 @@ weather_api_token=your_weather_api_token_here
 api_url=https://api.weatherapi.com/v1/current.json?key={api_key}&q={city}&aqi=no&lang=eng
 app_name=WeatherApp
 app_version=0.1.0
-ip_info_token=your_ip_info_token_here
-default_lang=EN
+default_lang=en
 db_name=app_db
 ```
 

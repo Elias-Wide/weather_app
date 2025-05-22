@@ -1,4 +1,3 @@
-import time
 from flet import (
     alignment,
     border,
@@ -35,6 +34,7 @@ from src.constants import (
     SEARCH_VIEW,
     WEATHER_VIEW,
 )
+from src.gui.page_elements import city_card_cache, city_card_large_cache
 from src.database.dao import favorites_cache
 from src.database.dao import FavoritesDAO
 from src.gui.page_elements import (
@@ -182,6 +182,7 @@ class FavoritesView(Column):
         favs_cities, _ = FavoritesDAO.get_favorites_by_page(
             self.page_num, self.page_size
         )
+
         list_cities = [
             CityWeather(get_city_weather(city.name), self.page_view.page.lang)
             for city in favs_cities
@@ -285,6 +286,8 @@ class FavoritesView(Column):
         city: CityWeather = obj.content.city
         FavoritesDAO.delete_object(**city.formated_data_for_favs())
         favorites_cache.clear()
+        city_card_cache.pop((city.name, self.page_view.page.lang), None)
+        city_card_large_cache.pop((city.name, self.page_view.page.lang), None)
         self.page.controls[0].change_view(FAVORITE_VIEW)
 
     def drag_leave(self, e: DragTargetEvent):
@@ -305,6 +308,7 @@ class FavoritesView(Column):
         Args:
             city_card_info (list[CityWeather]): List of CityWeather objects for the page.
         """
+
         city_num = 0
         self.controls = []
         while city_num != len(city_card_info):

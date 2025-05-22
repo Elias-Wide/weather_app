@@ -1,4 +1,5 @@
 from typing import Optional
+from cachetools import TTLCache
 from flet import (
     alignment,
     AppBar,
@@ -34,6 +35,9 @@ from src.constants import (
 )
 from src.localizations import TITLE, get_city_name_en, UI_LABELS
 from src.parse_api import get_city_weather, get_weather_icon
+
+city_card_large_cache = TTLCache(maxsize=100, ttl=600)
+city_card_cache = TTLCache(maxsize=100, ttl=600)
 
 
 class CustomAppBar(AppBar):
@@ -243,6 +247,17 @@ class CityCard(Card):
     A class representing a city card with weather information and city name.
     """
 
+    def __new__(cls, city: CityWeather, page_view, **kwargs):
+        cache_key = (
+            city.name,
+            page_view.page.lang,
+        )  # Ключ включает имя города и язык
+        if cache_key in city_card_cache:
+            return city_card_cache[cache_key]
+        instance = super().__new__(cls)
+        city_card_cache[cache_key] = instance
+        return instance
+
     def __init__(self, city: CityWeather, page_view, **kwargs):
         """
         Initializes the CityCard.
@@ -251,6 +266,10 @@ class CityCard(Card):
             city (CityWeather): The CityWeather object containing weather data for the city.
             page_view: The parent page view.
         """
+        if hasattr(self, "_initialized") and self._initialized:
+            return
+        self._initialized = True
+
         self.city = city
         self.page_view = page_view
         content = Container(
@@ -329,6 +348,17 @@ class CityCardLarge(Card):
     A class representing a larger city card with detailed weather information.
     """
 
+    def __new__(cls, city: CityWeather, page_view, **kwargs):
+        cache_key = (
+            city.name,
+            page_view.page.lang,
+        )  # Ключ включает имя города и язык
+        if cache_key in city_card_large_cache:
+            return city_card_large_cache[cache_key]
+        instance = super().__new__(cls)
+        city_card_large_cache[cache_key] = instance
+        return instance
+
     def __init__(self, city: CityWeather, page_view, **kwargs):
         """
         Initializes the CityCardLarge.
@@ -337,6 +367,10 @@ class CityCardLarge(Card):
             city (CityWeather): The CityWeather object containing weather data for the city.
             page_view: The parent page view.
         """
+        if hasattr(self, "_initialized") and self._initialized:
+            return
+        self._initialized = True
+
         super().__init__(width=600, height=400, **kwargs)
         self.city = city
         self.page_view = page_view

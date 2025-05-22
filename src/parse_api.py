@@ -1,3 +1,4 @@
+import datetime
 import os
 import requests
 from cachetools import cached, TTLCache
@@ -96,3 +97,19 @@ def find_file_in_directory(file_name: str, directory: str) -> str | None:
         if file_name in files:
             return os.path.join(root, file_name)
     return None
+
+
+def get_time_difference(
+    request_time: datetime.datetime, response_time: datetime.datetime
+) -> float:
+    """
+    Calculates the time difference in seconds between the request and the response from the database.
+
+    Args:
+        request_time (datetime.datetime): The time when the request was made.
+        response_time (datetime.datetime): The time when the response was received from the database.
+
+    Returns:
+        float: The time difference in seconds.
+    """
+    return (response_time - request_time).total_seconds()
