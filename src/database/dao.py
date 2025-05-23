@@ -1,12 +1,16 @@
-from typing import Generic, TypeVar
-
 from sqlalchemy import and_, insert, select
 from sqlalchemy.exc import SQLAlchemyError
+from typing import Generic, TypeVar
 
+from constants import WEATHER_ICONS_PATH
+from src.config import settings
 from src.database.db import session_maker
 from src.database.models import Base, Favorites
 
+from cachetools import cached, TTLCache
 
+
+favorites_cache = TTLCache(maxsize=100, ttl=120)
 ModelType = TypeVar("ModelType", bound=Base)
 
 
@@ -56,6 +60,29 @@ class BaseDAO(Generic[ModelType]):
         with session_maker() as session:
             db_objs = session.execute(select(cls.model))
             return db_objs.scalars().all()
+
+    @classmethod
+    @cached(cache=favorites_cache)
+    def get_favorites_by_page(cls, page: int = 1, page_size: int = 6):
+        """
+        Returns a tuple (items, total_count, has_prev, has_next) for pagination.
+
+        Args:
+            page (int): The page number (1-based).
+            page_size (int): The number of items per page.
+
+        Returns:
+            tuple: (items: list[Favorites], total_count: int, has_prev: bool, has_next: bool)
+        """
+        with session_maker() as session:
+            total_count = session.query(cls.model).count()
+            items = (
+                session.query(cls.model)
+                .offset((page - 1) * page_size)
+                .limit(page_size)
+                .all()
+            )
+            return items, total_count
 
 
 class FavoritesDAO(BaseDAO):

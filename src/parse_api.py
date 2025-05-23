@@ -1,9 +1,11 @@
-from datetime import datetime
+import datetime
 import os
 import requests
-from functools import lru_cache
+from cachetools import cached, TTLCache
 from constants import WEATHER_ICONS_PATH
 from src.config import settings
+
+city_weather_cache = TTLCache(maxsize=100, ttl=600)
 
 
 def get_conditions_from_api() -> list[dict[str]]:
@@ -13,6 +15,8 @@ def get_conditions_from_api() -> list[dict[str]]:
     Returns:
         list[dict[str]]: A list of dictionaries containing weather condition codes,
         day descriptions, and night descriptions.
+
+    Used during development to collect data for displaying text in localizations.py.
     """
     response = requests.get(
         url="https://www.weatherapi.com/docs/weather_conditions.json"
@@ -29,7 +33,7 @@ def get_conditions_from_api() -> list[dict[str]]:
     )
 
 
-@lru_cache
+@cached(city_weather_cache)
 def get_city_weather(city: str) -> dict:
     """
     Fetches weather data for a specific city from the Weather API.
@@ -93,3 +97,40 @@ def find_file_in_directory(file_name: str, directory: str) -> str | None:
         if file_name in files:
             return os.path.join(root, file_name)
     return None
+
+
+def get_time_difference(
+    request_time: datetime.datetime, response_time: datetime.datetime
+) -> float:
+    """
+    Calculates the time difference in seconds between the request and the response from the database.
+
+    Args:
+        request_time (datetime.datetime): The time when the request was made.
+        response_time (datetime.datetime): The time when the response was received from the database.
+
+    Returns:
+        float: The time difference in seconds.
+    """
+    return (response_time - request_time).total_seconds()
+
+
+def read_file(file_path: str) -> str:
+    """
+    Reads the first line from a text file.
+
+    Args:
+        file_path (str): The path to the text file.
+
+    Returns:
+        str: The first line of the file as a string.
+    """
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            return file.readline().strip()
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return ""
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return ""

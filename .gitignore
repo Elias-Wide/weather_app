@@ -164,3 +164,4 @@ cython_debug/
 
 # Flet
 storage/
+src/weather_app.egg-info/

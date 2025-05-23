@@ -1,4 +1,5 @@
 from typing import Optional
+from cachetools import TTLCache
 from flet import (
     alignment,
     AppBar,
@@ -22,20 +23,21 @@ from flet import (
     ProgressRing,
 )
 
-from database.dao import FavoritesDAO
-from functions import get_city_name_en
 from src.cityweather import CityWeather
+from src.database.dao import FavoritesDAO, favorites_cache
 from src.config import settings
 from src.constants import (
-    CHOOSE_CITY,
-    CITY_NAME_ERROR,
     LANG_SWITCHER,
     SEACRH_FIELD,
     THEME_SWITCHER,
     WEATHER_ICON,
     WEATHER_VIEW,
 )
+from src.localizations import TITLE, get_city_name_en, UI_LABELS
 from src.parse_api import get_city_weather, get_weather_icon
+
+city_card_large_cache = TTLCache(maxsize=100, ttl=600)
+city_card_cache = TTLCache(maxsize=100, ttl=600)
 
 
 class CustomAppBar(AppBar):
@@ -46,7 +48,6 @@ class CustomAppBar(AppBar):
     def __init__(
         self,
         title: str,
-        lang: str,
         change_theme_func,
         change_language_func,
         *args,
@@ -67,7 +68,7 @@ class CustomAppBar(AppBar):
             actions=[
                 ElevatedButton(
                     key=LANG_SWITCHER,
-                    text=settings.default_lang,
+                    text=settings.default_lang.upper(),
                     on_click=change_language_func,
                     icon=Icons.LANGUAGE,
                 ),
@@ -82,6 +83,10 @@ class CustomAppBar(AppBar):
             *args,
             **kwargs,
         )
+
+    def change_lang(self):
+        self.title.value = TITLE[self.page.lang]
+        self.update()
 
 
 class CustomIconButton(IconButton):
@@ -143,7 +148,7 @@ class SearchField(Container):
         super().__init__(
             content=TextField(
                 key=SEACRH_FIELD,
-                label=CHOOSE_CITY,
+                label=UI_LABELS["CHOOSE_CITY"][page_view.page.lang],
                 autofocus=True,
                 width=300,
                 expand=False,
@@ -174,7 +179,7 @@ class SearchField(Container):
             e: The event object.
         """
         self.content.border_color = Colors.BLUE
-        self.content.label = CHOOSE_CITY
+        self.content.label = UI_LABELS["CHOOSE_CITY"][self.page_view.page.lang]
         self.page.update()
 
     def search_city(self, e):
@@ -196,10 +201,14 @@ class SearchField(Container):
         if not weather:
             self.content = previous_widget
             self.content.border_color = Colors.RED
-            self.content.label = CITY_NAME_ERROR
+            self.content.label = UI_LABELS["CITY_NAME_ERROR"][
+                self.page_view.page.lang
+            ]
             self.page.update()
             return
-        self.page_view.last_weather_request = CityWeather(weather)
+        self.page_view.last_weather_request = CityWeather(
+            weather, lang=self.page_view.page.lang
+        )
         self.page_view.change_view(WEATHER_VIEW)
 
 
@@ -238,6 +247,17 @@ class CityCard(Card):
     A class representing a city card with weather information and city name.
     """
 
+    def __new__(cls, city: CityWeather, page_view, **kwargs):
+        cache_key = (
+            city.name,
+            page_view.page.lang,
+        )
+        if cache_key in city_card_cache:
+            return city_card_cache[cache_key]
+        instance = super().__new__(cls)
+        city_card_cache[cache_key] = instance
+        return instance
+
     def __init__(self, city: CityWeather, page_view, **kwargs):
         """
         Initializes the CityCard.
@@ -246,6 +266,10 @@ class CityCard(Card):
             city (CityWeather): The CityWeather object containing weather data for the city.
             page_view: The parent page view.
         """
+        if hasattr(self, "_initialized") and self._initialized:
+            return
+        self._initialized = True
+
         self.city = city
         self.page_view = page_view
         content = Container(
@@ -253,16 +277,12 @@ class CityCard(Card):
                 controls=[
                     Row(
                         controls=[
-                            Container(
-                                Column(
-                                    [WeatherIcon(city.icon_path, width=140)],
-                                    expand=True,
-                                    width=170,
-                                    height=150,
-                                    alignment=alignment.center,
-                                ),
-                                width=180,
+                            Column(
+                                [WeatherIcon(city.icon_path, width=140)],
                                 expand=True,
+                                width=170,
+                                height=150,
+                                alignment=alignment.center,
                             ),
                             Column(
                                 [
@@ -285,7 +305,7 @@ class CityCard(Card):
                             Row(
                                 [
                                     TextButton(
-                                        city.name,
+                                        city.get_formatted_name(),
                                         on_click=self.go_to_weather_page,
                                     )
                                 ],
@@ -324,6 +344,17 @@ class CityCardLarge(Card):
     A class representing a larger city card with detailed weather information.
     """
 
+    def __new__(cls, city: CityWeather, page_view, **kwargs):
+        cache_key = (
+            city.name,
+            page_view.page.lang,
+        )
+        if cache_key in city_card_large_cache:
+            return city_card_large_cache[cache_key]
+        instance = super().__new__(cls)
+        city_card_large_cache[cache_key] = instance
+        return instance
+
     def __init__(self, city: CityWeather, page_view, **kwargs):
         """
         Initializes the CityCardLarge.
@@ -332,6 +363,10 @@ class CityCardLarge(Card):
             city (CityWeather): The CityWeather object containing weather data for the city.
             page_view: The parent page view.
         """
+        if hasattr(self, "_initialized") and self._initialized:
+            return
+        self._initialized = True
+
         super().__init__(width=600, height=400, **kwargs)
         self.city = city
         self.page_view = page_view
@@ -350,7 +385,7 @@ class CityCardLarge(Card):
                             ),
                             Container(
                                 Text(
-                                    city.condition,
+                                    city.get_condition_text(),
                                     theme_style=TextThemeStyle.HEADLINE_SMALL,
                                     text_align=TextAlign.CENTER,
                                 ),
@@ -385,8 +420,13 @@ class CityCardLarge(Card):
         self.content = Container(
             Column(
                 [
-                    TextRow(city.name, style=TextThemeStyle.DISPLAY_MEDIUM),
-                    TextRow(city.get_city_date(), style=TextThemeStyle.BODY_MEDIUM),
+                    TextRow(
+                        city.get_formatted_name(),
+                        style=TextThemeStyle.DISPLAY_MEDIUM,
+                    ),
+                    TextRow(
+                        city.get_city_date(), style=TextThemeStyle.BODY_MEDIUM
+                    ),
                     city_condition_block,
                     TextRow(
                         city.formatted_wind_kph(),
@@ -421,7 +461,9 @@ class FavoritesButton(IconButton):
             city (CityWeather): The CityWeather object representing the city.
         """
         self.city = city
-        city_in_favs = FavoritesDAO.get_fav_city(**city.formated_data_for_favs())
+        city_in_favs = FavoritesDAO.get_fav_city(
+            **city.formated_data_for_favs()
+        )
         if city_in_favs:
             icon = Icons.FAVORITE_OUTLINED
             on_click_func = self.delete_from_favs
@@ -441,6 +483,7 @@ class FavoritesButton(IconButton):
             self.icon = Icons.FAVORITE_BORDER
             self.on_click = self.add_to_favs
             self.update()
+            favorites_cache.clear()
 
     def add_to_favs(self, e):
         """
@@ -452,6 +495,7 @@ class FavoritesButton(IconButton):
         FavoritesDAO.create(self.city.formated_data_for_favs())
         self.icon = Icons.FAVORITE_OUTLINED
         self.on_click = self.delete_from_favs
+        favorites_cache.clear()
         self.update()
 
 
@@ -460,7 +504,9 @@ class TextRow(Row):
     A row containing a single centered text element.
     """
 
-    def __init__(self, text: str, style: Optional[TextThemeStyle], *args, **kwargs):
+    def __init__(
+        self, text: str, style: Optional[TextThemeStyle], *args, **kwargs
+    ):
         """
         Initializes the TextRow.
 
@@ -477,3 +523,8 @@ class TextRow(Row):
             )
         ]
         self.alignment = MainAxisAlignment.CENTER
+
+    def get_appbar_action_by_key(self, control_key: str) -> None:
+        for action in self.page.appbar.actions:
+            if action.key == control_key:
+                return action
