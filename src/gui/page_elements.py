@@ -251,7 +251,7 @@ class CityCard(Card):
         cache_key = (
             city.name,
             page_view.page.lang,
-        )  # Ключ включает имя города и язык
+        )
         if cache_key in city_card_cache:
             return city_card_cache[cache_key]
         instance = super().__new__(cls)
@@ -277,16 +277,12 @@ class CityCard(Card):
                 controls=[
                     Row(
                         controls=[
-                            Container(
-                                Column(
-                                    [WeatherIcon(city.icon_path, width=140)],
-                                    expand=True,
-                                    width=170,
-                                    height=150,
-                                    alignment=alignment.center,
-                                ),
-                                width=180,
+                            Column(
+                                [WeatherIcon(city.icon_path, width=140)],
                                 expand=True,
+                                width=170,
+                                height=150,
+                                alignment=alignment.center,
                             ),
                             Column(
                                 [
@@ -352,7 +348,7 @@ class CityCardLarge(Card):
         cache_key = (
             city.name,
             page_view.page.lang,
-        )  # Ключ включает имя города и язык
+        )
         if cache_key in city_card_large_cache:
             return city_card_large_cache[cache_key]
         instance = super().__new__(cls)
