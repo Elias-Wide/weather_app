@@ -103,6 +103,36 @@ To run the project, follow these steps:
    flet run
    ```
 
+### Optional: Run the project using `uv`
+
+If you have `uv` installed, you can also run the project using the following commands:
+
+1. **Create a virtual environment using `uv`**:
+   ```bash
+   uv venv .venv
+   ```
+
+2. **Activate the virtual environment**:
+   - **Windows (Command Prompt)**:
+     ```bash
+     sorce .venv\Scripts\activate
+     ```
+
+   - **Linux/macOS**:
+     ```bash
+     source .venv/bin/activate
+     ```
+
+3. **Install dependencies**:
+   ```bash
+   uv pip install -r requirements.txt
+   ```
+
+4. **Run the application**:
+   ```bash
+   flet run
+   ```
+
 ---
 
 ## Weather API Keys
