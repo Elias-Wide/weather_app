@@ -139,12 +139,13 @@ class FavoritesView(Column):
         self.page_size = 6
         self.page_view = page_view
         self.page_num = 1
-        favs_cities, self.total_favs = FavoritesDAO.get_favorites_by_page()
+        favs_cities, self.total_favs = FavoritesDAO.get_favorites_by_page(
+            self.page_num, self.page_size
+        )
         self.list_cities = [
             CityWeather(get_city_weather(city.name), self.page_view.page.lang)
             for city in favs_cities
         ]
-
         if not self.list_cities:
             self.controls.append(
                 Container(
@@ -183,60 +184,86 @@ class FavoritesView(Column):
             self.page_num, self.page_size
         )
 
-        list_cities = [
+        self.list_cities = [
             CityWeather(get_city_weather(city.name), self.page_view.page.lang)
             for city in favs_cities
         ]
-        self.set_city_cards(list_cities)
-        if has_prev:
+        if not self.list_cities:
             self.controls.append(
-                Row(
-                    controls=[
-                        IconButton(
-                            Icons.NAVIGATE_BEFORE, on_click=self.get_prev_page
-                        )
-                    ],
-                    alignment=MainAxisAlignment.CENTER,
-                    expand=True,
-                )
-            )
-        if has_next:
-            self.controls.append(
-                Row(
-                    controls=[
-                        IconButton(
-                            Icons.NAVIGATE_NEXT, on_click=self.get_next_page
-                        )
-                    ],
-                    alignment=MainAxisAlignment.CENTER,
-                    expand=True,
-                )
-            )
-        self.controls.append(
-            DragTarget(
-                group="color",
-                content=Container(
-                    content=Card(
+                Container(
+                    Card(
                         Row(
-                            controls=[
-                                IconButton(
-                                    icon=Icons.DELETE,
+                            [
+                                Text(
+                                    UI_LABELS["FAVORITES"][
+                                        self.page_view.page.lang
+                                    ],
+                                    text_align=TextAlign.CENTER,
                                     expand=True,
-                                    height=70,
-                                    icon_size=45,
-                                )
+                                    color=Colors.GREY,
+                                ),
                             ],
+                            alignment=CrossAxisAlignment.CENTER,
                             expand=True,
                         ),
+                        expand=True,
                     ),
-                    alignment=alignment.center,
-                    height=70,
+                    expand=True,
                 ),
-                on_will_accept=self.drag_will_accept,
-                on_accept=self.drag_accept,
-                on_leave=self.drag_leave,
-            ),
-        )
+            )
+        else:
+            self.set_city_cards()
+            if has_prev:
+                self.controls.append(
+                    Row(
+                        controls=[
+                            IconButton(
+                                Icons.NAVIGATE_BEFORE,
+                                on_click=self.get_prev_page,
+                            )
+                        ],
+                        alignment=MainAxisAlignment.CENTER,
+                        expand=True,
+                    )
+                )
+            if has_next:
+                self.controls.append(
+                    Row(
+                        controls=[
+                            IconButton(
+                                Icons.NAVIGATE_NEXT,
+                                on_click=self.get_next_page,
+                            )
+                        ],
+                        alignment=MainAxisAlignment.CENTER,
+                        expand=True,
+                    )
+                )
+            self.controls.append(
+                DragTarget(
+                    group="color",
+                    content=Container(
+                        content=Card(
+                            Row(
+                                controls=[
+                                    IconButton(
+                                        icon=Icons.DELETE,
+                                        expand=True,
+                                        height=70,
+                                        icon_size=45,
+                                    )
+                                ],
+                                expand=True,
+                            ),
+                        ),
+                        alignment=alignment.center,
+                        height=70,
+                    ),
+                    on_will_accept=self.drag_will_accept,
+                    on_accept=self.drag_accept,
+                    on_leave=self.drag_leave,
+                ),
+            )
 
     def get_next_page(self, e):
         """
@@ -301,7 +328,7 @@ class FavoritesView(Column):
         bucket_icon.color = None
         bucket_icon.update()
 
-    def set_city_cards(self, city_card_info: list[CityWeather]):
+    def set_city_cards(self):
         """
         Arranges city cards in rows for the current page of favorites.
 
@@ -311,7 +338,7 @@ class FavoritesView(Column):
 
         city_num = 0
         self.controls = []
-        while city_num != len(city_card_info):
+        while city_num != len(self.list_cities):
             fav_counter = 0
             self.controls.append(
                 Container(
@@ -321,9 +348,9 @@ class FavoritesView(Column):
                 ),
             )
             while fav_counter != 3:
-                if city_num == len(city_card_info):
+                if city_num == len(self.list_cities):
                     break
-                city = city_card_info[city_num]
+                city = self.list_cities[city_num]
                 self.controls[-1].content.controls.append(
                     Container(
                         Draggable(
