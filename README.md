@@ -1,7 +1,8 @@
 # WeatherApp
 
 WeatherApp is an application designed to display current weather information for selected cities. It provides a user-friendly interface to view weather details such as temperature, humidity, wind speed, and more.  
-The application uses [weatherapi.com](https://weatherapi.com) as its source for real-time weather data.
+The application uses [weatherapi.com](https://weatherapi.com) as its source for real-time weather data.  
+The project is built using the **Flet** framework, which enables the creation of cross-platform user interfaces.
 
 ---
 
@@ -45,7 +46,6 @@ The application uses [weatherapi.com](https://weatherapi.com) as its source for 
 The application requires an `.env` file to be configured. Example content:
 
 ```plaintext
-weather_api_token=your_weather_api_token_here
 api_url=https://api.weatherapi.com/v1/current.json?key={api_key}&q={city}&aqi=no&lang=eng
 app_name=WeatherApp
 app_version=0.1.0
@@ -67,3 +67,48 @@ The project uses the following key dependencies:
 - **cachetools**: For caching API responses.
 
 The full list of dependencies can be found in the `pyproject.toml` file.
+
+---
+
+## Running the Project
+
+To run the project, follow these steps:
+
+1. **Create a virtual environment**:
+   ```bash
+   python -m venv venv
+   ```
+
+2. **Activate the virtual environment**:
+   - **Windows (Command Prompt)**:
+     ```bash
+     venv\Scripts\activate
+     ```
+   - **Windows (PowerShell)**:
+     ```bash
+     .\venv\Scripts\Activate.ps1
+     ```
+   - **Linux/macOS**:
+     ```bash
+     source venv/bin/activate
+     ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the application**:
+   ```bash
+   flet run
+   ```
+
+---
+
+## Weather API Keys
+
+The available API keys for the Weather API are stored in the `weather_api.txt` file. The application reads the key from this file to interact with the Weather API. Ensure that the file contains a valid API key in the following format:
+
+```plaintext
+your_api_key_here
+```
