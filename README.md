@@ -137,8 +137,5 @@ If you have `uv` installed, you can also run the project using the following com
 
 ## Weather API Keys
 
-The available API keys for the Weather API are stored in the `weather_api.txt` file. The application reads the key from this file to interact with the Weather API. Ensure that the file contains a valid API key in the following format:
+The available API keys for the Weather API are stored in the `weather_api.txt` file. The application reads the key from this file to interact with the Weather API.
 
-```plaintext
-your_api_key_here
-```

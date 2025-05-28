@@ -1,7 +1,7 @@
 import os
 from posixpath import abspath, dirname
-from src.database.db import create_db_and_tables, sqlite_database
-from src.config import settings
+from database.db import create_db_and_tables, sqlite_database
+from config import settings
 
 
 def is_local_db_exists(db_path: str) -> bool:

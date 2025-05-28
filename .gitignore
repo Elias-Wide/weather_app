@@ -53,7 +53,7 @@ coverage.xml
 cover/
 
 main.env
-appdb.db
+app_db.sqlite
 # Translations
 *.mo
 *.pot

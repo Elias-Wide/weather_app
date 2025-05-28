@@ -23,18 +23,18 @@ from flet import (
     ProgressRing,
 )
 
-from src.cityweather import CityWeather
-from src.database.dao import FavoritesDAO, favorites_cache
-from src.config import settings
-from src.constants import (
+from cityweather import CityWeather
+from database.dao import FavoritesDAO, favorites_cache
+from config import settings
+from constants import (
     LANG_SWITCHER,
     SEACRH_FIELD,
     THEME_SWITCHER,
     WEATHER_ICON,
     WEATHER_VIEW,
 )
-from src.localizations import TITLE, get_city_name_en, UI_LABELS
-from src.parse_api import get_city_weather, get_weather_icon
+from localizations import TITLE, get_city_name_en, UI_LABELS
+from parse_api import get_city_weather, get_weather_icon
 
 city_card_large_cache = TTLCache(maxsize=100, ttl=600)
 city_card_cache = TTLCache(maxsize=100, ttl=600)
@@ -269,67 +269,62 @@ class CityCard(Card):
         if hasattr(self, "_initialized") and self._initialized:
             return
         self._initialized = True
-
         self.city = city
         self.page_view = page_view
-        content = Container(
-            Column(
-                controls=[
-                    Row(
-                        controls=[
-                            Column(
-                                [WeatherIcon(city.icon_path, width=140)],
-                                expand=True,
-                                width=170,
-                                height=150,
-                                alignment=alignment.center,
-                            ),
-                            Column(
-                                [
-                                    Text(
-                                        city.formatted_temp_c(),
-                                        color=Colors.GREY,
-                                        expand=True,
-                                        size=20,
-                                    ),
-                                ],
-                                expand=True,
-                            ),
-                        ],
-                        alignment=alignment.center,
-                        expand=True,
-                        height=140,
-                    ),
-                    Row(
-                        [
-                            Row(
-                                [
-                                    TextButton(
-                                        city.get_formatted_name(),
-                                        on_click=self.go_to_weather_page,
-                                    )
-                                ],
-                                alignment=MainAxisAlignment.START,
-                            ),
-                            Row(
-                                [
-                                    Text(
-                                        city.get_city_local_time(),
-                                        color=Colors.BLUE,
-                                        weight="bold",
-                                    )
-                                ],
-                                alignment=MainAxisAlignment.END,
-                            ),
-                        ],
-                        alignment=MainAxisAlignment.CENTER,
-                    ),
-                ]
-            ),
+        content = Column(
+            controls=[
+                Row(
+                    controls=[
+                        Column(
+                            [WeatherIcon(city.icon_path, width=140)],
+                            expand=True,
+                            width=170,
+                            height=150,
+                            alignment=alignment.center,
+                        ),
+                        Column(
+                            [
+                                Text(
+                                    city.formatted_temp_c(),
+                                    color=Colors.GREY,
+                                    expand=True,
+                                    size=20,
+                                ),
+                            ],
+                            expand=True,
+                        ),
+                    ],
+                    alignment=alignment.center,
+                    expand=True,
+                    height=140,
+                ),
+                Row(
+                    [
+                        Row(
+                            [
+                                TextButton(
+                                    city.get_formatted_name(),
+                                    on_click=self.go_to_weather_page,
+                                )
+                            ],
+                            alignment=MainAxisAlignment.START,
+                        ),
+                        Row(
+                            [
+                                Text(
+                                    city.get_city_local_time(),
+                                    color=Colors.BLUE,
+                                    weight="bold",
+                                )
+                            ],
+                            alignment=MainAxisAlignment.END,
+                        ),
+                    ],
+                    alignment=MainAxisAlignment.CENTER,
+                ),
+            ],
             width=250,
             height=140,
-            padding=10,
-            alignment=alignment.center,
         )
         super().__init__(content=content, **kwargs)
 
@@ -417,34 +412,31 @@ class CityCardLarge(Card):
             ],
             alignment=MainAxisAlignment.CENTER,
         )
-        self.content = Container(
-            Column(
-                [
-                    TextRow(
-                        city.get_formatted_name(),
-                        style=TextThemeStyle.DISPLAY_MEDIUM,
-                    ),
-                    TextRow(
-                        city.get_city_date(), style=TextThemeStyle.BODY_MEDIUM
-                    ),
-                    city_condition_block,
-                    TextRow(
-                        city.formatted_wind_kph(),
-                        style=TextThemeStyle.BODY_MEDIUM,
-                    ),
-                    TextRow(
-                        city.formatted_humidity(),
-                        style=TextThemeStyle.BODY_MEDIUM,
-                    ),
-                    Row(
-                        [FavoritesButton(city=city)],
-                        expand=True,
-                        alignment=MainAxisAlignment.END,
-                    ),
-                ],
-                alignment=MainAxisAlignment.CENTER,
-            ),
-            alignment=alignment.center,
+        self.content = Column(
+            [
+                TextRow(
+                    city.get_formatted_name(),
+                    style=TextThemeStyle.DISPLAY_MEDIUM,
+                ),
+                TextRow(
+                    city.get_city_date(), style=TextThemeStyle.BODY_MEDIUM
+                ),
+                city_condition_block,
+                TextRow(
+                    city.formatted_wind_kph(),
+                    style=TextThemeStyle.BODY_MEDIUM,
+                ),
+                TextRow(
+                    city.formatted_humidity(),
+                    style=TextThemeStyle.BODY_MEDIUM,
+                ),
+                Row(
+                    [FavoritesButton(city=city)],
+                    expand=True,
+                    alignment=MainAxisAlignment.END,
+                ),
+            ],
+            alignment=MainAxisAlignment.CENTER,
         )
 
 

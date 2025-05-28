@@ -3,7 +3,7 @@ from typing import Optional, Dict
 
 from localizations import localize_city_name
 from parse_api import get_weather_icon
-from src.constants import DEFAULT_ICON_SRC
+from constants import DEFAULT_ICON_SRC
 from localizations import HUMIDITY, WIND, weather_conditions
 
 

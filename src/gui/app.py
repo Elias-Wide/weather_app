@@ -15,10 +15,10 @@ from constants import (
 )
 
 from localizations import TITLE
-from src.config import settings
-from src.gui.app_layout import AppLayout
-from src.gui.sidebar import SideBar
-from src.gui.page_elements import CustomAppBar, WeatherIcon
+from config import settings
+from gui.app_layout import AppLayout
+from gui.sidebar import SideBar
+from gui.page_elements import CustomAppBar, WeatherIcon
 
 
 class WeatherApp(AppLayout):

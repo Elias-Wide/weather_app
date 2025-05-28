@@ -13,13 +13,12 @@ dependencies = [
   "pydantic_settings==2.9.1",
   "sqlalchemy>=2.0.40",
   "cachetools>=5.5.2",
+  "requests>=2.32.3",
+  "toml>=0.10.2"
 ]
 
 [tool.flet]
-# org name in reverse domain name notation, e.g. "com.mycompany".
-# Combined with project.name to build bundle ID for iOS and Android apps
 org = "com.mycompany"
-
 # project display name that is used as an app title on Android and iOS home screens,
 # shown in window titles and about app dialogs on desktop.
 product = "weather-app"
@@ -31,7 +30,10 @@ company = "Flet"
 copyright = "Copyright (C) 2025 by Flet"
 
 [tool.flet.app]
+module = "main"
 path = "src"
+include = [ "main.env", "weather_api.txt"]
+
 
 [tool.uv]
 dev-dependencies = [
@@ -39,7 +41,7 @@ dev-dependencies = [
 ]
 
 [tool.poetry]
-package-mode = false
+package-mode = true
 
 [tool.poetry.group.dev.dependencies]
 flet = {extras = ["all"], version = "0.27.6"}

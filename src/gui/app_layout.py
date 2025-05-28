@@ -7,15 +7,15 @@ from flet import (
 )
 
 from cityweather import CityWeather
-from src.config import settings
-from src.constants import FAVORITE_VIEW, SEARCH_VIEW, TOGGLE_BTN, WEATHER_VIEW
-from src.gui.page_views import (
+from config import settings
+from constants import FAVORITE_VIEW, SEARCH_VIEW, TOGGLE_BTN, WEATHER_VIEW
+from gui.page_views import (
     DownloadView,
     FavoritesView,
     SearchView,
     WeatherView,
 )
-from src.gui.sidebar import SideBar
+from gui.sidebar import SideBar
 
 
 class AppLayout(Row):
