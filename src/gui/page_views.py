@@ -27,17 +27,17 @@ from flet import (
 
 from localizations import UI_LABELS
 from parse_api import get_city_weather, get_weather_icon
-from src.cityweather import CityWeather
-from src.constants import (
+from cityweather import CityWeather
+from constants import (
     DOWNLOAD_VIEW,
     FAVORITE_VIEW,
     SEARCH_VIEW,
     WEATHER_VIEW,
 )
-from src.gui.page_elements import city_card_cache, city_card_large_cache
-from src.database.dao import favorites_cache
-from src.database.dao import FavoritesDAO
-from src.gui.page_elements import (
+from gui.page_elements import city_card_cache, city_card_large_cache
+from database.dao import favorites_cache
+from database.dao import FavoritesDAO
+from gui.page_elements import (
     CityCard,
     CityCardLarge,
     FavoritesButton,
@@ -146,33 +146,9 @@ class FavoritesView(Column):
             CityWeather(get_city_weather(city.name), self.page_view.page.lang)
             for city in favs_cities
         ]
-        if not self.list_cities:
-            self.controls.append(
-                Container(
-                    Card(
-                        Row(
-                            [
-                                Text(
-                                    UI_LABELS["FAVORITES"][
-                                        self.page_view.page.lang
-                                    ],
-                                    text_align=TextAlign.CENTER,
-                                    expand=True,
-                                    color=Colors.GREY,
-                                ),
-                            ],
-                            alignment=CrossAxisAlignment.CENTER,
-                            expand=True,
-                        ),
-                        expand=True,
-                    ),
-                    expand=True,
-                ),
-            )
-        else:
-            self.set_favorites_page_view()
+        self.set_favorites_page_view(is_init=True)
 
-    def set_favorites_page_view(self):
+    def set_favorites_page_view(self, is_init=False):
         """
         Updates the controls to display the current page of favorite cities,
         including pagination controls and drag target for deleting favorites.
@@ -180,14 +156,17 @@ class FavoritesView(Column):
         self.controls = []
         has_prev = self.page_num > 1
         has_next = self.page_num * self.page_size < self.total_favs
-        favs_cities, _ = FavoritesDAO.get_favorites_by_page(
-            self.page_num, self.page_size
-        )
+        if not is_init:
+            favs_cities, self.total_favs = FavoritesDAO.get_favorites_by_page(
+                self.page_num, self.page_size
+            )
 
-        self.list_cities = [
-            CityWeather(get_city_weather(city.name), self.page_view.page.lang)
-            for city in favs_cities
-        ]
+            self.list_cities = [
+                CityWeather(
+                    get_city_weather(city.name), self.page_view.page.lang
+                )
+                for city in favs_cities
+            ]
         if not self.list_cities:
             self.controls.append(
                 Container(
@@ -335,32 +314,28 @@ class FavoritesView(Column):
         Args:
             city_card_info (list[CityWeather]): List of CityWeather objects for the page.
         """
-
-        city_num = 0
         self.controls = []
-        while city_num != len(self.list_cities):
-            fav_counter = 0
-            self.controls.append(
-                Container(
-                    Row(expand=True, alignment=CrossAxisAlignment.CENTER),
+        row = None
+
+        for index, city in enumerate(self.list_cities):
+            if index % 3 == 0:
+                row = Row(
                     expand=True,
-                    padding=30,
-                ),
-            )
-            while fav_counter != 3:
-                if city_num == len(self.list_cities):
-                    break
-                city = self.list_cities[city_num]
-                self.controls[-1].content.controls.append(
+                    alignment=CrossAxisAlignment.CENTER,
+                )
+                self.controls.append(
                     Container(
-                        Draggable(
-                            group="color",
-                            content=CityCard(city, self.page_view),
-                        ),
+                        row,
+                        expand=True,
+                        padding=30,
                     )
                 )
-                fav_counter += 1
-                city_num += 1
+            row.controls.append(
+                Draggable(
+                    group="color",
+                    content=CityCard(city, self.page_view),
+                )
+            )
 
 
 class DownloadView(Row):

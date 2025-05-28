@@ -13,7 +13,7 @@ from flet import (
 )
 
 from localizations import UI_LABELS
-from src.constants import FAVORITE_VIEW, SEARCH_VIEW, WEATHER_VIEW
+from constants import FAVORITE_VIEW, SEARCH_VIEW, WEATHER_VIEW
 
 
 class SideBar(Container):

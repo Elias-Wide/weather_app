@@ -6,7 +6,7 @@ from flet import (
 from config import settings
 from db_init import init_database
 from localizations import TITLE
-from src.gui.app import WeatherApp
+from gui.app import WeatherApp
 
 
 def main(page: Page):

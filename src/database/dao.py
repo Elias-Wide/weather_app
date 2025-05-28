@@ -3,9 +3,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from typing import Generic, TypeVar
 
 from constants import WEATHER_ICONS_PATH
-from src.config import settings
-from src.database.db import session_maker
-from src.database.models import Base, Favorites
+from config import settings
+from database.db import session_maker
+from database.models import Base, Favorites
 
 from cachetools import cached, TTLCache
 
